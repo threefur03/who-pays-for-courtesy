@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Results: stop-line grid (primary) · Who Pays for Courtesy?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400&display=swap">
+<link rel="stylesheet" href="../assets/css/site.css">
+</head>
+<body class="doc">
+<header class="doc-bar">
+  <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true"></span>Who pays for courtesy?</a>
+  <a href="../index.html#report">← all documents</a>
+</header>
+<main class="doc-main">
+  <p class="doc-note">Frozen document, rendered as registered. SHA-256 of the original file: <code>2da277ea49f99b1381d4f58f0a91038a44d63ac5e31e41f41483c0476790bc9f</code>.
+  Lines that name local paths or unrelated internal folders were removed (0 removed) and local time-zone or place labels redacted, for anonymous review;
+  file paths in the text refer to the code release.</p>
+  <article class="prose">
+<h1>Results Q: amendment grid Q01, queue at the stop line (960 episodes, finished 10 November 2026, about 07:00)</h1>
+<p><strong>Design:</strong> <code>DESIGN_Q.md</code>, frozen in <code>integrity/REGISTRATION_FREEZE_Q.json</code> before the grid ran.</p>
+<ul>
+<li>The only change from the registered v6 grid R01 is the queue start: all three cars are moved 7.4 m forward, so the lead car's front is 0.8 m behind the junction entry.</li>
+<li>The amendment was written after the R01 outcomes were known. Every number in this file is labelled "amendment" wherever it is reported.</li>
+</ul>
+<p><strong>Sources:</strong></p>
+<ul>
+<li>registered analysis (unchanged code): <code>checkpoints/Q01/summary.json</code> (<code>analysis/aggregate_v6.py</code>);</li>
+<li>exploratory: <code>checkpoints/Q01/posthoc/MICRO_MACRO.json</code> (<code>posthoc/micro_macro_v6.py</code>);</li>
+<li>replay pick: <code>checkpoints/Q01/REPLAY_SELECTION.json</code>.</li>
+</ul>
+<p><strong>Units and conventions:</strong></p>
+<ul>
+<li>people = person held + slowed by vehicles (person·s per episode);</li>
+<li>cars = vehicle standing before the full turn (vehicle·s per episode);</li>
+<li>intervals are paired bootstrap 95% over scenarios;</li>
+<li>S0 = calibrated scenarios, S1 = LLM scenarios, 40 each.</li>
+</ul>
+<p><strong>Run log.</strong> All 960 runs completed with exit code 0 (about 35–45 s each, 22:14 to about 07:00).</p>
+<h2>1. Registered contrasts (pooled n = 80 unless stated)</h2>
+<table>
+<thead>
+<tr>
+<th>Contrast</th>
+<th>Q01 (queue at line)</th>
+<th>R01 (queue upstream)</th>
+<th>Verdict in Q01</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>H5a people, courteous − reactive</td>
+<td>−3.47 [−4.86, −2.15]</td>
+<td>−2.43 [−4.03, −1.02]</td>
+<td>supported</td>
+</tr>
+<tr>
+<td>H5b cars, courteous − reactive</td>
+<td>+17.96 [13.42, 22.88]</td>
+<td>+13.5 [8.6, 18.8]</td>
+<td>supported</td>
+</tr>
+<tr>
+<td>H6a person-first share, LPI − concurrent (n = 78)</td>
+<td>+0.044 [0.002, 0.089]</td>
+<td>0 (twins identical)</td>
+<td>supported, narrowly</td>
+</tr>
+<tr>
+<td>H6b lead close passes, LPI − concurrent</td>
+<td>−0.179 [−0.321, −0.035]</td>
+<td>0</td>
+<td>supported</td>
+</tr>
+<tr>
+<td>H6c cars, LPI − concurrent</td>
+<td>+3.39 [−0.85, 7.64]</td>
+<td>0</td>
+<td>not supported</td>
+</tr>
+<tr>
+<td>H7 (P1 − P3)_LPI − (P1 − P3)_concurrent, people</td>
+<td>−4.75 [−7.31, −2.22]</td>
+<td>0</td>
+<td>supported</td>
+</tr>
+<tr>
+<td>H8 people, Gipps − IDM</td>
+<td>+0.04 [−0.65, 1.00]</td>
+<td>−0.05 [−0.93, 0.85]</td>
+<td>estimate; includes 0</td>
+</tr>
+<tr>
+<td>H8 follower close passes, Gipps − IDM</td>
+<td>−0.06 [−0.14, 0.01]</td>
+<td>0.03 [−0.05, 0.10]</td>
+<td>estimate; includes 0</td>
+</tr>
+<tr>
+<td>H8 cars, Gipps − IDM</td>
+<td>+0.33 [−0.01, 0.73]</td>
+<td>0.16 [−0.39, 0.74]</td>
+<td>estimate; includes 0</td>
+</tr>
+</tbody>
+</table>
+<p>There are six primary contrasts (H5a, H5b, H6a–c, H7), and the intervals are not corrected for multiplicity. The H6a lower bound (0.002) would not survive any correction.</p>
+<p><strong>H6a sample.</strong> n = 78 because two scenarios have no car–person encounter in at least one condition.</p>
+<p><strong>H5 per cell.</strong> Courtesy's saving for people depends on the signal:</p>
+<table>
+<thead>
+<tr>
+<th>Follower, signal</th>
+<th>People (P3 − P1)</th>
+<th>Cars (P3 − P1)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IDM, concurrent</td>
+<td>−6.20 [−8.56, −3.91]</td>
+<td>+22.2</td>
+</tr>
+<tr>
+<td>Gipps, concurrent</td>
+<td>−5.50 [−7.66, −3.44]</td>
+<td>+22.7</td>
+</tr>
+<tr>
+<td>IDM, LPI</td>
+<td>−1.08 [−2.72, 0.38]</td>
+<td>+13.2</td>
+</tr>
+<tr>
+<td>Gipps, LPI</td>
+<td>−1.12 [−2.72, 0.26]</td>
+<td>+13.7</td>
+</tr>
+</tbody>
+</table>
+<p>So under the LPI, courtesy still costs drivers about 13 vehicle·s but no longer saves people a detectable amount. This is H7: under the LPI the signal does most of the work courtesy does for people.</p>
+<p><strong>By source.</strong></p>
+<ul>
+<li><strong>H5a:</strong> S0 −4.94 [−7.27, −2.60]; S1 −2.01 [−3.39, −0.88]. Both supported.</li>
+<li><strong>H7:</strong><ul>
+<li>S0 −8.74 [−13.00, −4.95];</li>
+<li>S1 −0.76 [−3.12, 2.06].</li>
+<li>The substitution therefore appears in the calibrated scenarios, not in the LLM ones.</li>
+</ul>
+</li>
+<li><strong>H6a, H6b:</strong> supported in S0 and not in S1 (intervals include 0).</li>
+<li><strong>H6c:</strong> the two sources have opposite signs, so the pooled null is not "no effect".<ul>
+<li>S0 −8.56 [−13.49, −3.70]: the LPI lowered vehicle standing.</li>
+<li>S1 +15.34 [10.59, 19.74]: it raised it, close to the 15 vehicle·s that holding three cars for 5 s would cost.</li>
+<li>In S0 the yielding leads cleared the junction earlier under the LPI: gap acceptance 39.1 → 36.3 s, courteous 42.3 → 39.1 s (episode means from <code>episodes.csv</code>).</li>
+<li>Why the platoon clears differently has not been analysed.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Check C (repair).</strong></p>
+<ul>
+<li>0 runs ended in a mutual standstill.</li>
+<li>0 polygon contacts and 0 sensor contacts (R01 had 12 runs with polygon contacts).</li>
+<li>The minimum gap was 0.024 m.</li>
+<li>120 runs used the stopped-car pass rule.</li>
+</ul>
+<h2>2. Exploratory, macroscopic (A1–A3)</h2>
+<p><strong>A1, who gets through within the green</strong> (cars completing the turn, of 3; share of crossers clearing the zebra):</p>
+<table>
+<thead>
+<tr>
+<th>Lead</th>
+<th>Concurrent</th>
+<th>LPI</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>reactive</td>
+<td>1.75 cars, 0.63 crossers</td>
+<td>1.43 cars, 0.66 crossers</td>
+</tr>
+<tr>
+<td>gap acceptance</td>
+<td>1.31, 0.64</td>
+<td>1.21, 0.67</td>
+</tr>
+<tr>
+<td>courteous</td>
+<td>1.14, 0.66</td>
+<td>1.07, 0.66</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>No condition gets 2 of 3 cars through within the green.</li>
+<li>The LPI costs the reactive lead's queue about 0.3 cars per green.</li>
+<li>The crosser share moves by at most 0.03.</li>
+</ul>
+<p><strong>A2, discriminating scenarios.</strong> The three planners' cost to people spans more than 1 person·s in:</p>
+<ul>
+<li>36 of 40 calibrated scenarios (median span 5.46 person·s);</li>
+<li>25 of 40 LLM scenarios (median span 2.24).</li>
+</ul>
+<p>In R01 it was 26 against 17 (medians 3.22 against 0.25). The LLM scenarios still separate the planners less often, but the gap narrows when the queue starts at the line.</p>
+<p><strong>A3, signal timing relations.</strong> Spearman ρ with G and F are small (|ρ| ≤ 0.35) and are not reported in the paper.</p>
+<h2>3. Exploratory, microscopic (M1–M3)</h2>
+<p><strong>M1, person first, by time since the car's green.</strong></p>
+<ul>
+<li>Measured from the car's own green, which starts 5 s later under the LPI; in Q01 this is a fair comparison because the lead car is at the line.</li>
+<li>No encounter happens within 10 s of the car's green, because the lead car needs about 10 s to reach the zebra.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Window</th>
+<th>Concurrent</th>
+<th>LPI</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10–20 s</td>
+<td>0.09 [0.04, 0.16], n = 254</td>
+<td>0.55 [0.41, 0.66], n = 308</td>
+</tr>
+<tr>
+<td>≥ 20 s</td>
+<td>0.35 [0.31, 0.39]</td>
+<td>0.32 [0.27, 0.37]</td>
+</tr>
+<tr>
+<td>all</td>
+<td>0.30</td>
+<td>0.37</td>
+</tr>
+</tbody>
+</table>
+<p>The SinD reference (pedestrians share the green; different geometry; different bins):</p>
+<ul>
+<li>people first in 7 of 15 encounters in the first 10 s;</li>
+<li>people first in 47 of 68 later.</li>
+</ul>
+<p><strong>M2, close passes (PET &lt; 1.5 s) by vehicle role:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Concurrent</th>
+<th>LPI</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>lead</td>
+<td>0.47 [0.39, 0.56], 486 encounters</td>
+<td>0.24 [0.18, 0.31], 596</td>
+</tr>
+<tr>
+<td>followers</td>
+<td>0.39 [0.33, 0.46], 904</td>
+<td>0.42 [0.37, 0.48], 803</td>
+</tr>
+<tr>
+<td>motorcycle</td>
+<td>0.23, 919</td>
+<td>0.22, 894</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>The LPI halves the lead car's close-pass share and leaves the followers' unchanged.</li>
+<li>Lead encounters by planner: 529 reactive, 301 gap acceptance, 252 courteous. Their close-pass shares are 0.39, 0.29 and 0.33.</li>
+</ul>
+<p><strong>M3, held + slowed per crosser</strong> (person·s), by kind:</p>
+<table>
+<thead>
+<tr>
+<th>Kind</th>
+<th>Concurrent → LPI</th>
+<th>Reactive → gap acceptance → courteous</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>walkers</td>
+<td>1.13 → 0.85</td>
+<td>1.41 → 0.80 → 0.75</td>
+</tr>
+<tr>
+<td>runner</td>
+<td>1.56 → 1.15</td>
+<td>1.45 → 1.33 → 1.28</td>
+</tr>
+<tr>
+<td>e-bikes</td>
+<td>0.63 → 0.65</td>
+<td>1.01 → 0.50 → 0.41</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>The LPI helps walkers and the runner but not the e-bike riders; why has not been analysed.</li>
+<li>Courtesy helps walkers and e-bike riders most and the runner least.</li>
+</ul>
+<h2>4. Replay (pre-registered rule)</h2>
+<p><strong>Pick.</strong> Following the rule, take the LLM scenarios whose people cost under reactive + IDM changes between the programs; there are 40. The median (lower) is <code>S1_B3_04</code>, a late-runner brief, with a change of −0.8 person·s.</p>
+<p><strong>Drawing.</strong> <code>paper_aaai27/figures/v6q_fig_replay.pdf</code>, instants 16, 22, 28 and 46 s (chosen for legibility).</p>
+<ul>
+<li><strong>Concurrent:</strong><ul>
+<li>the lead car crosses ahead of a walker at 16 s (PET 0.95 s) and slows them;</li>
+<li>all cars have cleared by 37 s, so no car meets the runner.</li>
+</ul>
+</li>
+<li><strong>LPI:</strong><ul>
+<li>the lead car arrives later, stops before the zebra (22 s) and crosses behind the first walkers (28 s);</li>
+<li>the last follower then reaches the zebra in the flashing phase (46 s), slows a walker and meets the runner (PET 1.2 s).</li>
+</ul>
+</li>
+</ul>
+<h2>5. Isolation</h2>
+<ul>
+<li>R01 outputs (<code>checkpoints/R01</code>, <code>figures/v6_fig_*</code>) were not touched.</li>
+<li>The Q01 outputs are in <code>runs/grid/Q01</code>, <code>checkpoints/Q01</code> and <code>paper_aaai27/figures/v6q_fig_*</code>.</li>
+<li>The fingerprint after Q01 is in <code>integrity/after_q01.json</code>.</li>
+</ul>
+<h2>6. Post hoc additions (after reading sections 1–3; not in any registration)</h2>
+<p><strong>The LPI's effect on people, by source.</strong> LPI − concurrent in person held + slowed, paired bootstrap over scenarios (4000 resamples, seed 11):</p>
+<ul>
+<li>S0 (calibrated): −2.73 [−4.45, −1.11];</li>
+<li>S1 (LLM): −0.33 [−2.76, 2.01];</li>
+<li>pooled: −1.53 [−3.04, −0.10].</li>
+</ul>
+<p>Together with H6c by source, the LPI lowered both people's cost and cars' standing in the calibrated scenarios. In the LLM scenarios it raised standing without detectably helping people.</p>
+<p><strong>Who is at the kerb when the walk signal starts.</strong> Walkers with <code>release_s</code> ≤ 3 s, from each scenario's frozen population:</p>
+<ul>
+<li>calibrated: 3 of 5 walkers on average, in 40 of 40 scenarios;</li>
+<li>LLM: 0.42 of 4.5, in 15 of 40 scenarios.</li>
+</ul>
+<p>A leading interval can only give a head start to people who are there when it starts. This difference is consistent with the source split, but it is not a tested explanation.</p>
+  </article>
+</main>
+</body>
+</html>

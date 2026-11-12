@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Registration: amendment T, state-triggered scenarios (H9–H12) · Who Pays for Courtesy?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400&display=swap">
+<link rel="stylesheet" href="../assets/css/site.css">
+</head>
+<body class="doc">
+<header class="doc-bar">
+  <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true"></span>Who pays for courtesy?</a>
+  <a href="../index.html#report">← all documents</a>
+</header>
+<main class="doc-main">
+  <p class="doc-note">Frozen document, rendered as registered. SHA-256 of the original file: <code>5fb782473267bbe2e2abb6c83a8ba397c5234e7a57c866ca9deb2fc761a1eeae</code>.
+  Lines that name local paths or unrelated internal folders were removed (0 removed) and local time-zone or place labels redacted, for anonymous review;
+  file paths in the text refer to the code release.</p>
+  <article class="prose">
+<h1>Amendment T: state-triggered LLM scenarios (designed 10 November 2026, after the Q01 results)</h1>
+<p>This amendment tests the generator diagnostic in the paper: scenarios written in open loop, with clock-timed arrivals, land where the closed-loop dynamics put them, often away from the planner under test.</p>
+<p>It adds one new generator arm with state triggers, and one control arm that isolates a confound found while designing.</p>
+<ul>
+<li>Registration: <code>integrity/REGISTRATION_FREEZE_T.json</code>, written only after every gate below passes.</li>
+<li>Isolation: the registered v6 files, freeze H and freeze Q stay as they are. Amendment T has its own code (<code>amend_T/</code>), scenarios (<code>amend_T/scenarios/</code>), gates, runs (<code>runs/gates/T</code>, <code>runs/grid/T01</code>) and checkpoints (<code>checkpoints/T01</code>).</li>
+</ul>
+<h2>1. Why, and the confound found while designing</h2>
+<p><strong>What Q01 showed.</strong> In the stop-line grid (Q01), the 40 LLM scenarios (S1) were weaker tests of the lead planner than the 40 calibrated ones:</p>
+<ul>
+<li>the lead car met no crosser in any of its 12 runs in 9 of 40 scenarios (calibrated: 2);</li>
+<li>the planners' cost to people spanned more than 1 person·s in 25 of 40 (calibrated: 36);</li>
+<li>followers made 51% of the close passes (calibrated: 44%).</li>
+</ul>
+<p><strong>Two causes cannot be told apart from Q01 alone.</strong></p>
+<ul>
+<li><strong>(a) Stale timing in the prompt.</strong> The v5 prompt told the LLM that "the lead car usually reaches the zebra about 23–26 s after the start". In Q01 the queue starts at the stop line, and the unimpeded lead car reaches the zebra at 14.3 s (19.3 s under the LPI), measured from the P1 runs.<ul>
+<li>The LLM wrote clock times for a timing the benchmark no longer had.</li>
+</ul>
+</li>
+<li><strong>(b) Clock timing in closed loop.</strong> Even with correct timing, a clock-timed arrival cannot follow the closed-loop variation of the vehicles.<ul>
+<li>The lead car's zebra arrival ranges from 14.3 to 55.9 s across scenarios, and its median is 14.3 s under the reactive planner against 29.1 s under the courteous one.</li>
+<li>The LPI adds 5 s.</li>
+</ul>
+</li>
+</ul>
+<h2>2. Arms</h2>
+<p>All arms use:</p>
+<ul>
+<li>the same model (anthropic/claude-sonnet-5.5 via OpenRouter, temperature 0.8, max 3000 tokens);</li>
+<li>the same eight briefs (<code>scenario_generator_v5/generator/briefs.json</code>);</li>
+<li>the same admissible box, revision rule (two revisions with the checker's reasons) and duplicate rule (feature distance ≥ 0.05 within a brief);</li>
+<li>five admitted scenarios per brief (40 per arm).</li>
+</ul>
+<p>The LLM never sees a run outcome.</p>
+<table>
+<thead>
+<tr>
+<th>Arm</th>
+<th>Scenarios</th>
+<th>Prompt</th>
+<th>Runs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C0</td>
+<td>the existing S1 set (frozen in v5)</td>
+<td>v5 prompt (lead reaches the zebra "23–26 s")</td>
+<td>reused from Q01: IDM, 3 planners × 2 signals = 240 runs</td>
+</tr>
+<tr>
+<td>C1</td>
+<td>new, clock-timed</td>
+<td>v5 prompt with one sentence corrected to the stop-line timing (§3)</td>
+<td>40 × 3 planners × IDM × 2 signals = 240</td>
+</tr>
+<tr>
+<td>T1</td>
+<td>new, state-triggered</td>
+<td>the C1 prompt plus a trigger option (§3)</td>
+<td>40 × 3 planners × IDM × 2 signals = 240</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Common settings.</strong> Every run uses the queue at the stop line (offset 7.4 m, as in Q01), IDM followers, the stopped-car pass rule, the Q01 horizon and the Q01 servers.</p>
+<h2>3. The prompt changes, verbatim</h2>
+<p><strong>C1 and T1.</strong> The v5 timing sentence is replaced by:</p>
+<blockquote>
+<p>The lead car starts at the stop line, 20 m before the zebra, and usually reaches the zebra about 14 s after the start when it is not held up (about 19 s under a leading pedestrian interval, and later when it yields); the cars behind it follow about 7-20 s apart.</p>
+</blockquote>
+<p><strong>T1 only.</strong> One more paragraph:</p>
+<blockquote>
+<p>Instead of release_s, any walker, the runner, an e-bike or the motorcycle may be released by a trigger tied to one of the three queued cars: "trigger": {"car": "lead"|"second"|"third", "to_zebra_m": d, "delay_s": x} releases it x seconds after that car's front comes within d metres of the zebra along its path (d 0-20, x 0-15). The lead car is the one under test. Use a trigger when the interaction should meet a particular car whatever the planner or the signal does; walkers still need about 5-11 s from release to reach the zebra.</p>
+</blockquote>
+<p><strong>Admissibility.</strong></p>
+<ul>
+<li>A triggered object has a <code>trigger</code> and no <code>release_s</code>.</li>
+<li><code>car</code> must be lead, second or third; <code>to_zebra_m</code> must be in 0–20 and <code>delay_s</code> in 0–15.</li>
+<li>Every other bound is unchanged.</li>
+<li>For the duplicate check only, a trigger is mapped to the clock time at which the unimpeded lead car would fire it: 4.5 + (20 − d) / 2.2 s, plus 7 s for the second car and 14 s for the third, plus the delay.</li>
+</ul>
+<h2>4. Runner change (<code>amend_T/runner_v7t.py</code>, marked <code>v7t</code>)</h2>
+<p><code>runner_v7t</code> is a copy of <code>amend_Q/runner_v6q.py</code>.</p>
+<ul>
+<li>A compiled scenario may carry <code>"triggers": {object_id: {"car", "to_zebra_m", "delay_s"}}</code>. Its triggered objects carry <code>release_s</code> = 1e6 until the trigger fires.</li>
+<li><strong>Each step:</strong> if the named car's front is within <code>to_zebra_m</code> of the zebra along its route (<code>car_crossing_s[0]</code> − front_s ≤ d), the object's release time becomes t + <code>delay_s</code>. From then on the unchanged clock release logic spawns it.</li>
+<li><strong>Logging:</strong> fire times go to <code>TRIGGERS.json</code> and into CONFIG.</li>
+<li><strong>Equivalence:</strong> without triggers, the runner is equivalent to <code>runner_v6q</code> (gate T-a).</li>
+</ul>
+<h2>5. Measures (per arm, over its 40 scenarios)</h2>
+<ol>
+<li><strong>miss.</strong> Scenarios in which the lead car meets no crosser (no encounter within the 5 s window) in any of its six runs.</li>
+<li><strong>separation.</strong><ul>
+<li>Scenarios in which the three planners' people held + slowed (each planner averaged over the two signals) spans more than 1 person·s.</li>
+<li>Also the median span.</li>
+</ul>
+</li>
+<li><strong>lead share.</strong> Lead-car close passes (PET &lt; 1.5 s) divided by all close passes, pooled over the arm's runs; the interval is a bootstrap over scenarios.</li>
+<li><strong>brief realised.</strong> The v5 event detectors (<code>event_B1</code>–<code>event_B7</code>) under gap acceptance (P2), IDM, concurrent, for the 35 scenarios with a checkable brief (B1–B7).</li>
+<li><strong>Descriptive.</strong> People held + slowed, vehicle standing, close passes per episode, by planner and signal.</li>
+</ol>
+<h2>6. Hypotheses (directional; T1 against C1)</h2>
+<p>Primary contrasts:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Prediction</th>
+<th>Test</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>H9</td>
+<td>T1 has fewer miss scenarios than C1</td>
+<td>one-sided Fisher exact test</td>
+</tr>
+<tr>
+<td>H10</td>
+<td>T1 has more separating scenarios than C1</td>
+<td>one-sided Fisher exact test</td>
+</tr>
+<tr>
+<td>H11</td>
+<td>the lead share of close passes is higher in T1 than in C1</td>
+<td>bootstrap of the difference over scenarios (4000 resamples, seed 21), one-sided 95%</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>H12, timing information:</strong> C1 against C0 on the same three measures, two-sided, reported as estimates.</li>
+<li><strong>Brief realisation:</strong> T1, C1 and C0 are reported against each other with no direction.</li>
+<li>The three primary contrasts (H9–H11) are not corrected for multiplicity.</li>
+<li><strong>Interpretation:</strong><ul>
+<li>H12 isolates cause (a).</li>
+<li>H9–H11 isolate cause (b), given correct timing.</li>
+<li>If T1 does not beat C1, the paper says that clock timing with correct information was enough, or that triggers did not help.</li>
+</ul>
+</li>
+</ul>
+<h2>7. Gates (criteria fixed before the gate runs; <code>runs/gates/T</code>)</h2>
+<table>
+<thead>
+<tr>
+<th>Gate</th>
+<th>Check</th>
+<th>Pass criterion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T-a, reproduction</td>
+<td><code>runner_v7t</code> on <code>S1_B3_04</code> (P1, IDM, concurrent) and <code>S1_B1_01</code> (P2, IDM, lpi), queue at the line, no triggers</td>
+<td>MEASURES.json and PROGRESS.json equal the Q01 twins (apart from run name and runner hash)</td>
+</tr>
+<tr>
+<td>T-b, triggers fire</td>
+<td>a hand-written test scenario (<code>amend_T/scenarios/test/TT_trigger.json</code>): <code>S1_B3_04</code> with ped_0 given <code>{"car": "lead", "to_zebra_m": 10, "delay_s": 0}</code> and ped_run given <code>{"car": "third", "to_zebra_m": 5, "delay_s": 2}</code>; run under P1 and P3, concurrent</td>
+<td>in each run: each trigger fires once; ped_0 fires within one step (0.05 s) of the lead's front reaching 10 m before the zebra; ped_run fires 2.0 s (±0.05) after the third car comes within 5 m; ped_0's fire time differs between P1 and P3 (the trigger follows the planner)</td>
+</tr>
+<tr>
+<td>T-c, generation</td>
+<td>the C1 and T1 generation</td>
+<td>40 admitted scenarios each within the budget (US$5 and 400 requests per arm); every T1 trigger passes the bounds</td>
+</tr>
+<tr>
+<td>T-d, sanity</td>
+<td>three T1 scenarios (the first admitted for B1, B3 and B8), P2, IDM, concurrent</td>
+<td>each completes with no mutual standstill and no polygon contact beginning under the pass rule</td>
+</tr>
+</tbody>
+</table>
+<p>If a gate fails, only the failing mechanism is fixed. The fix is recorded here and the gate rerun; the hypotheses, measures and arms do not change.</p>
+<p><strong>Gate record.</strong></p>
+<p><strong>T-a passed (10 November, about 12:40).</strong> Both runs were identical to their Q01 twins.</p>
+<p><strong>T-b failed its third criterion, then passed on a corrected criterion.</strong></p>
+<ul>
+<li><strong>The trigger mechanism worked in both runs.</strong><ul>
+<li>ped_0 fired at 9.65 s, the step at which the lead car came within 10 m.</li>
+<li>ped_run fired 2.00 s after the third car came within 5 m (44.2 → 46.2 s under P1, 64.5 → 66.5 s under P3).</li>
+<li>CONFIG carried the realised release times.</li>
+</ul>
+</li>
+<li><strong>The failed criterion:</strong> "ped_0's fire time differs between P1 and P3" failed, at 9.65 s in both runs.<ul>
+<li>The cause is the criterion, not the code. Both planners drive the same until the lead car is 30% through the turn, which lies beyond the 10 m point.</li>
+<li>So a lead-car trigger at 10 m cannot follow the planner. A trigger on a car whose arrival depends on the planner does.</li>
+</ul>
+</li>
+<li><strong>The correction.</strong> The criterion was corrected after this result to "the third car's trigger (ped_run) fires at different times under P1 and P3". That gave 44.2 against 64.5 s, so T-b passed.</li>
+<li><strong>What did not change:</strong> the code, the hypotheses, the measures and the arms.</li>
+<li><strong>Consequence for interpretation:</strong> a lead-car trigger adapts to the launch, the queue position and the LPI (all before the turn), but not to the lead planner's own yielding. A trigger on the second or third car also adapts to the planner.</li>
+</ul>
+<h2>8. Analysis and reporting</h2>
+<ul>
+<li><strong>Analysis.</strong> <code>amend_T/aggregate_t.py</code> reads <code>runs/grid/Q01</code> (C0: S1 scenarios, IDM) and <code>runs/grid/T01</code> (C1, T1) and writes <code>checkpoints/T01/summary.json</code>.</li>
+<li><strong>Labelling.</strong> In the paper, amendment T is labelled as designed after the Q01 results. The C0 runs are reused, not rerun.</li>
+<li><strong>Not in this amendment.</strong> The reviewer's other proposal, followers with the gap-acceptance rule, is a separate decision.</li>
+</ul>
+  </article>
+</main>
+</body>
+</html>

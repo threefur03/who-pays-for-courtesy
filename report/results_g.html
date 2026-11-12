@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Results: generator study (H1–H3) · Who Pays for Courtesy?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400&display=swap">
+<link rel="stylesheet" href="../assets/css/site.css">
+</head>
+<body class="doc">
+<header class="doc-bar">
+  <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true"></span>Who pays for courtesy?</a>
+  <a href="../index.html#report">← all documents</a>
+</header>
+<main class="doc-main">
+  <p class="doc-note">Frozen document, rendered as registered. SHA-256 of the original file: <code>cc75b515d9fb7dcb01840e0c1e8b4a096f5db4d8cf64ba72e19c458bed29be8d</code>.
+  Lines that name local paths or unrelated internal folders were removed (0 removed) and local time-zone or place labels redacted, for anonymous review;
+  file paths in the text refer to the code release.</p>
+  <article class="prose">
+<h1>Scenario generator v5: results of grid R01</h1>
+<p>9 November 2026. The design and the analysis plan are in <a href="DESIGN_G.md">DESIGN_G.md</a>, frozen in <code>integrity/REGISTRATION_FREEZE_G.json</code> before any grid run. Each result below is labelled with where it comes from:</p>
+<table>
+<thead>
+<tr>
+<th>Label</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Registered</strong></td>
+<td><code>analysis/aggregate_v5.py</code> → <code>checkpoints/R01/summary.json</code></td>
+</tr>
+<tr>
+<td><strong>Supplement</strong></td>
+<td><code>analysis/supplement_v5.py</code> → <code>checkpoints/R01/supplement.json</code>. Written after the grid: one registered measure the aggregate left out, plus exact tests for H3.</td>
+</tr>
+<tr>
+<td><strong>Post hoc</strong></td>
+<td><code>analysis/posthoc_deadlocks_v5.py</code> → <code>checkpoints/R01/posthoc/DEADLOCKS_AND_SENSITIVITY.json</code>. Written after looking at the grid.</td>
+</tr>
+</tbody>
+</table>
+<p>Every number is a simulated proxy for one CARLA junction. None of it describes real behaviour, trust or comfort.</p>
+<h2>1. Integrity</h2>
+<ul>
+<li><strong>Episodes:</strong> 480 run, 476 complete.<ul>
+<li>All four runs of uniform scenario S2_327 failed before the first step: a crosser could not spawn because of a collision at its spawn point (<code>RuntimeError</code> in <code>spawn_crosser</code>).</li>
+<li>As registered, they were not rerun or imputed. S2 therefore has 39 scenarios.</li>
+</ul>
+</li>
+<li><strong>Contacts:</strong><ul>
+<li>The collision sensor recorded none.</li>
+<li>Using the polygon rule that gate G2 used (a car's body and a crosser's body touch, gap 0), there was <strong>one touch</strong> in S0_202 under P1 (assertive). The lead car touched walker ped_0 at t = 21.05 s, at 0.07 m/s, and both then stood touching until the horizon.</li>
+<li>The sensor cannot see such touches, because the crossers are invincible kinematic actors.</li>
+</ul>
+</li>
+<li><strong>Planner fallbacks:</strong> 0.</li>
+<li><strong>Rule service:</strong> port 8796. CARLA ran on port 2210 only.</li>
+<li><strong>Planner-insensitive scenarios:</strong> in 34 of 119 complete scenarios, all four planners give identical person-side measures (held + slowed, close passes, near-moving time). In those scenarios the lead's choices never met a crosser.<ul>
+<li>By source: S0 3 of 40, S1 16 of 40, S2 15 of 39.</li>
+<li>This counts as a result for H2: many LLM and uniform scenarios never put the planner under test into a choice that affects people.</li>
+</ul>
+</li>
+</ul>
+<h2>2. Generator (S1)</h2>
+<table>
+<thead>
+<tr>
+<th>Quantity</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Model</td>
+<td><code>anthropic/claude-sonnet-5.5</code> via OpenRouter, temperature 0.8</td>
+</tr>
+<tr>
+<td>Requests</td>
+<td>40 for 40 admitted scenarios (5 per brief × 8 briefs)</td>
+</tr>
+<tr>
+<td>Revisions</td>
+<td>0. Every first proposal passed the checker.</td>
+</tr>
+<tr>
+<td>Duplicates rejected</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Cost</td>
+<td>USD 0.63 (dry run G3b: USD 0.24 for 16 requests)</td>
+</tr>
+<tr>
+<td>Diversity (mean nearest-neighbour distance, normalised spec space)</td>
+<td>S0 0.030, <strong>S1 0.141</strong>, S2 0.208</td>
+</tr>
+</tbody>
+</table>
+<p>Make-up of the scenarios:</p>
+<ul>
+<li><strong>S0:</strong> always 7 crossers with a runner, an e-bike and a motorcycle, under G = 45 s and F = 8 s.</li>
+<li><strong>S1:</strong> 3–9 crossers (mean 5.3). A runner in 35% of scenarios, 0.47 e-bikes on average, and a motorcycle in 60%. G ranges 30–58 s.</li>
+<li><strong>S2:</strong> 2–9 crossers (mean 5.2). A runner in 45%, 0.88 e-bikes, and a motorcycle in 50%. G ranges 30–60 s.</li>
+</ul>
+<p><strong>Takeaways:</strong></p>
+<ul>
+<li>The checker never had to correct the generator, so the admissibility loop was not exercised in the grid set.</li>
+<li>The generator spread less than uniform sampling (by construction, the uniform draws fill the box) and far more than calibrated sampling.</li>
+</ul>
+<h2>3. Registered hypotheses</h2>
+<h3>H1 Stress: not supported</h3>
+<p>Under P2, the person-side cost was not higher in S1 than in S2 or S0.</p>
+<table>
+<thead>
+<tr>
+<th>Measure (P2, per scenario)</th>
+<th>S0</th>
+<th>S1</th>
+<th>S2</th>
+<th>S1 − S2, 95% CI</th>
+<th>S1 − S0, 95% CI</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Held + slowed by vehicles (person·s), mean</td>
+<td>7.39</td>
+<td>8.54</td>
+<td>9.38</td>
+<td>−13.8 to 11.2</td>
+<td>−6.7 to 11.1</td>
+</tr>
+<tr>
+<td>Close passes (PET &lt; 1.5 s)</td>
+<td>1.50</td>
+<td>1.15</td>
+<td>1.21</td>
+<td>−0.56 to 0.45</td>
+<td>−0.83 to 0.13</td>
+</tr>
+</tbody>
+</table>
+<p>The briefs asked for specific interactions, not for high cost. Even B8, the open brief asking for the highest cost to crossers, gave a median of 3.15 person·s under P2 (S0 median 3.25, S2 median 1.45; n = 5, exploratory).</p>
+<h3>H2 Separation: not supported at the registered test</h3>
+<p>The registered test compares sources on the per-scenario gap between P1 (assertive) and P3 (courteous) in person-side cost.</p>
+<table>
+<thead>
+<tr>
+<th>Measure</th>
+<th>Mean P1 − P3 gap: S0</th>
+<th>S1</th>
+<th>S2</th>
+<th>S1 − S2, 95% CI</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Held + slowed (person·s)</td>
+<td>7.34 [0.70, 17.0]</td>
+<td>1.72 [0.66, 3.04]</td>
+<td>−3.96 [−13.9, 1.72]</td>
+<td>−0.20 to 15.8</td>
+</tr>
+<tr>
+<td>Close passes</td>
+<td>0.45 [0.08, 0.85]</td>
+<td>0.33 [0.08, 0.60]</td>
+<td>0.23 [−0.05, 0.51]</td>
+<td>−0.29 to 0.50</td>
+</tr>
+</tbody>
+</table>
+<p>The S1 − S2 intervals include 0. The S0 and S2 gaps are driven by a handful of standstill runs (§4).</p>
+<p>Descriptively, S1 is the only source whose P1 − P3 gap in held + slowed time stays above zero both in the registered analysis and without the standstill scenarios (post hoc: S1 [0.54, 3.11], S0 [−0.44, 3.92], S2 [−0.56, 2.01]). This is not the registered between-source test, and it should not be presented as a confirmed effect.</p>
+<h3>H3 Rare interactions: supported against uniform sampling for every brief, but on 5 scenarios per brief</h3>
+<p>Rates are under P2.</p>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>S1 own brief</th>
+<th>S0 (chance)</th>
+<th>S2 (chance)</th>
+<th>One-sided Fisher p, own vs S2 (supplement)</th>
+<th>vs S0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B1 late group (≥ 2 walkers start on flashing)</td>
+<td>3/5</td>
+<td>0/40</td>
+<td>2/39</td>
+<td>0.007</td>
+<td>0.001</td>
+</tr>
+<tr>
+<td>B2 deadline e-bike</td>
+<td>3/5</td>
+<td>0/40</td>
+<td>5/39</td>
+<td>0.035</td>
+<td>0.001</td>
+</tr>
+<tr>
+<td>B3 late runner</td>
+<td>4/5</td>
+<td>39/40</td>
+<td>13/39</td>
+<td>0.065</td>
+<td>0.99</td>
+</tr>
+<tr>
+<td>B4 hidden walker</td>
+<td>3/5</td>
+<td>29/40</td>
+<td>6/39</td>
+<td>0.050</td>
+<td>0.86</td>
+</tr>
+<tr>
+<td>B5 counterflow</td>
+<td>4/5</td>
+<td>28/40</td>
+<td>12/39</td>
+<td>0.051</td>
+<td>0.55</td>
+</tr>
+<tr>
+<td>B6 slow last crosser</td>
+<td>5/5</td>
+<td>20/40</td>
+<td>7/39</td>
+<td>0.001</td>
+<td>0.044</td>
+</tr>
+<tr>
+<td>B7 two riders</td>
+<td>5/5</td>
+<td>23/40</td>
+<td>2/39</td>
+<td>&lt; 0.001</td>
+<td>0.080</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Overall:</strong> 27 of 35 briefed scenarios (77%) produced their own event. S2 produced the same events by chance in 17% of cases, and S0 in 50%.</li>
+<li><strong>Against S2:</strong> S1 is higher for all seven events. The added exact test gives p &lt; 0.05 for four of them, uncorrected for 14 tests.</li>
+<li><strong>Against S0:</strong> S1 is higher only for B1, B2, B6 and B7. S0 always contains a runner, an e-bike and a motorcycle, so B3 and B4 occur in nearly every calibrated scenario.</li>
+<li><strong>Targeting:</strong> the generator put events where they were asked for.<ul>
+<li>B7 occurred in 5/5 B7 scenarios but in only 1 of the 35 other S1 scenarios.</li>
+<li>B5 (counterflow) occurred in 23 of the 35 other S1 scenarios, so it separates poorly, as the gates had already shown.</li>
+</ul>
+</li>
+</ul>
+<h3>H4 Who pays: orderings partly stable, sensitive to standstill runs</h3>
+<p>The vehicle-side ordering is stable. Standing time is lowest under P1 and highest under P3 in every source, in both analyses. Kendall's tau between sources is 0.67–1.0.</p>
+<table>
+<thead>
+<tr>
+<th>Person-side means (person·s), P1 / P2 / P3 / P4</th>
+<th>S0</th>
+<th>S1</th>
+<th>S2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Registered, all complete scenarios</td>
+<td>12.5 / 7.4 / 5.2 / 7.6</td>
+<td>9.1 / 8.5 / 7.4 / 12.2</td>
+<td>4.5 / 9.4 / 8.5 / 4.3</td>
+</tr>
+<tr>
+<td>Post hoc, without standstill or touch scenarios</td>
+<td>6.0 / 4.9 / 4.5 / 5.3</td>
+<td>5.5 / 4.6 / 3.8 / 4.4</td>
+<td>4.1 / 4.4 / 3.5 / 3.9</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Registered person-side tau:</strong> S0~S1 0.67, S0~S2 −0.33, S1~S2 −0.67.</li>
+<li><strong>Post-hoc person-side tau:</strong> 0.67, 0.33, 0.67.</li>
+</ul>
+<p>With four planners, tau takes only seven values. One standstill scenario (S2_334 under P2 and P3) reverses the S2 person-side ordering. In the post-hoc set, P3 costs people least in all three sources.</p>
+<h2>4. Mutual standstills (post hoc)</h2>
+<p><strong>What happens:</strong> in 11 of 476 runs, a car's protective stop leaves it standing with its nose 0.5–1.3 m onto the zebra (1.16–1.30 m in 10 of the 11). The crossers it blocks wait at its body. Neither rule releases, so both sides stand still until the horizon (23–36 s).</p>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Runs</th>
+<th>Scenarios</th>
+<th>Car involved</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S0</td>
+<td>4</td>
+<td>S0_202 (P1), S0_220 (P1, P2), S0_226 (P4)</td>
+<td>lead in S0_202; follower 1 otherwise</td>
+</tr>
+<tr>
+<td>S1</td>
+<td>5</td>
+<td>S1_B5_01 (all four planners), S1_B6_04 (P4)</td>
+<td>follower 1 in B5_01; lead in B6_04</td>
+</tr>
+<tr>
+<td>S2</td>
+<td>2</td>
+<td>S2_334 (P2, P3)</td>
+<td>follower 1</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Which car:</strong> 9 of the 11 standstills involve the IDM follower, which is not the planner under test. That is why S1_B5_01 is identical under all planners.</li>
+<li><strong>Effect on the measures:</strong> each standstill adds 85–190 person·s of "held by vehicle" time. Those runs dominate the means.</li>
+<li><strong>Model artefact:</strong> this comes from the simulated crosser and protective-stop rules, which are inherited unchanged from v4. In the simulator, people do not walk round a car's nose, and the car does not creep on once they stop.</li>
+<li><strong>Reporting:</strong><ul>
+<li>The registered analysis keeps these runs, and it stays primary.</li>
+<li>The sensitivity analysis drops the 6 scenarios with a standstill or touch from every planner, which keeps the pairing.</li>
+<li>This would be the first thing to fix in a later model version. It must not be fixed in this registration.</li>
+</ul>
+</li>
+<li><strong>Without the six scenarios:</strong><ul>
+<li>H1 is unchanged. P2 held + slowed means are S0 4.86, S1 4.58 and S2 4.43; S1 − S2 [−2.5, 3.4]; S1 − S0 [−3.0, 2.9].</li>
+<li>H2 is unchanged (S1 − S2 [−0.78, 2.83]).</li>
+</ul>
+</li>
+</ul>
+<h2>5. How and when each party progresses (registered measures)</h2>
+<p>Means per scenario under P2. Medians are pooled over encounters.</p>
+<table>
+<thead>
+<tr>
+<th>Measure</th>
+<th>S0</th>
+<th>S1</th>
+<th>S2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Share of encounters where the person went first</td>
+<td>0.54</td>
+<td>0.30</td>
+<td>0.33</td>
+</tr>
+<tr>
+<td>Median PET, vehicle first (s)</td>
+<td>1.05</td>
+<td>2.17</td>
+<td>1.25</td>
+</tr>
+<tr>
+<td>Median PET, person first (s)</td>
+<td>2.75</td>
+<td>2.67</td>
+<td>2.50</td>
+</tr>
+<tr>
+<td>Progress delay (s per person)</td>
+<td>4.17</td>
+<td>4.79</td>
+<td>4.38</td>
+</tr>
+<tr>
+<td>Cars standing before the turn (vehicle·s)</td>
+<td>52.6</td>
+<td>37.9</td>
+<td>26.2</td>
+</tr>
+<tr>
+<td>Turns before green ends (of 3)</td>
+<td>1.10</td>
+<td>1.35</td>
+<td>2.08</td>
+</tr>
+<tr>
+<td>Lead car clears the zebra (s)</td>
+<td>37.5</td>
+<td>28.9</td>
+<td>25.5</td>
+</tr>
+<tr>
+<td>Hidden from the motorcycle rider (s)</td>
+<td>0.74</td>
+<td>0.14</td>
+<td>0.16</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Reading:</strong></p>
+<ul>
+<li>In S1 and S2 the vehicles went first in about two thirds of encounters. In S0 the split was nearly even.</li>
+<li>When vehicles went first in S1, people entered behind them later (a median of 2.2 s, against 1.1–1.3 s in S0 and S2).</li>
+<li>The LLM scenarios were therefore not closer encounters. If anything, they gave vehicles more room.</li>
+</ul>
+<h2>6. What may be claimed</h2>
+<p><strong>Supported, with the caveats above:</strong></p>
+<ul>
+<li>An LLM used only as a scenario generator, under an admissibility check, wrote admissible scenarios on every first attempt for USD 0.63.</li>
+<li>Those scenarios realised the requested interaction in 27 of 35 cases. That is more often than uniform sampling of the same box produced the same interactions by chance, for every brief.</li>
+</ul>
+<p><strong>Not supported:</strong></p>
+<ul>
+<li>that LLM scenarios stress people more than uniform or calibrated sampling (H1);</li>
+<li>that they separate assertive from courteous planners more clearly than uniform sampling does (H2, registered test).</li>
+</ul>
+<p><strong>Must be stated:</strong></p>
+<ul>
+<li>5 scenarios per brief;</li>
+<li>the uncorrected exact tests;</li>
+<li>one polygon touch (S0_202, P1);</li>
+<li>the 11 standstill runs as a simulator artefact;</li>
+<li>one failed uniform scenario.</li>
+</ul>
+<h2>7. Files</h2>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>checkpoints/R01/episodes.csv</code>, <code>summary.json</code></td>
+<td>registered aggregate</td>
+</tr>
+<tr>
+<td><code>checkpoints/R01/fig_who_pays.pdf</code>, <code>fig_events.pdf</code></td>
+<td>registered figures</td>
+</tr>
+<tr>
+<td><code>checkpoints/R01/supplement.json</code></td>
+<td>PET medians, H3 exact tests, per-brief costs</td>
+</tr>
+<tr>
+<td><code>checkpoints/R01/posthoc/DEADLOCKS_AND_SENSITIVITY.json</code>, <code>posthoc/fig_who_pays_sensitivity.pdf</code></td>
+<td>standstills, touch and sensitivity analyses</td>
+</tr>
+<tr>
+<td><code>checkpoints/R01/timelines/</code></td>
+<td>one timeline per brief under P2 (selection rule and picks in <code>SELECTION.json</code>)</td>
+</tr>
+<tr>
+<td><code>checkpoints/R01/replays/</code></td>
+<td>dashboard videos (chase, front camera, LiDAR, who-pays ledger) for the same eight runs; rendered on a windowed <code>-vulkan</code> CARLA on port 2210 with <code>replay/replay_v5.py</code>; the cameras follow the lead car</td>
+</tr>
+<tr>
+<td><code>runs/grid/R01/</code></td>
+<td>480 episode folders and <code>BATCH_LOG.jsonl</code></td>
+</tr>
+</tbody>
+</table>
+  </article>
+</main>
+</body>
+</html>

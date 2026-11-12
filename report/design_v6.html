@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Registration: benchmark grid (H5–H8) · Who Pays for Courtesy?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400&display=swap">
+<link rel="stylesheet" href="../assets/css/site.css">
+</head>
+<body class="doc">
+<header class="doc-bar">
+  <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true"></span>Who pays for courtesy?</a>
+  <a href="../index.html#report">← all documents</a>
+</header>
+<main class="doc-main">
+  <p class="doc-note">Frozen document, rendered as registered. SHA-256 of the original file: <code>30dde491263009dc0570035d9be9bc313da5ad3e3d0d3c315c38b8c66c8b0d85</code>.
+  Lines that name local paths or unrelated internal folders were removed (0 removed) and local time-zone or place labels redacted, for anonymous review;
+  file paths in the text refer to the code release.</p>
+  <article class="prose">
+<h1>Progress factors v6: driving paradigm × signal program (design, 9 November 2026)</h1>
+<p>The user asked on 9 November to "proceed with the remaining experiments that are broken" in the v5 results and stated the core question:</p>
+<blockquote>
+<p>how do car-following models or other planning paradigms, and the traffic signal, relate to how humans and drivers progress?</p>
+</blockquote>
+<p>This study answers that question. It also repairs the three things that broke in v5:</p>
+<ul>
+<li>the mutual standstills;</li>
+<li>the scenario that could not spawn;</li>
+<li>contacts measured only by the collision sensor.</li>
+</ul>
+<p>The v5 registration is not touched. v6 reads the frozen v5 scenario files read-only. Its code is a hashed copy of v5 (<code>integrity/COPIED_SOURCES.json</code>), and every change is marked <code>v6</code>.</p>
+<h2>1. Question</h2>
+<p>At a permissive left turn across a zebra, how do three things shape the time people and drivers lose, and the order in which they pass?</p>
+<ul>
+<li>the planning paradigm of the turning lead car;</li>
+<li>the car-following law of the two cars behind it;</li>
+<li>the signal program.</li>
+</ul>
+<p>The LLM's role is unchanged from v5: it generates test scenarios and never drives. Two scenario populations are used:</p>
+<ul>
+<li><strong>S1:</strong> the 40 frozen LLM scenarios;</li>
+<li><strong>S0:</strong> the 40 frozen calibrated scenarios.</li>
+</ul>
+<h2>2. Factors (full factorial, paired within scenario)</h2>
+<table>
+<thead>
+<tr>
+<th>Factor</th>
+<th>Levels</th>
+<th>Implementation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lead planning paradigm</td>
+<td><strong>reactive</strong> (P1: proceeds whenever its protective stop allows); <strong>gap acceptance</strong> (P2: forecast conflicts, 0.5 s margin); <strong>courteous</strong> (P3: 2.0 s margin)</td>
+<td>the v5 planners, unchanged</td>
+</tr>
+<tr>
+<td>Follower car-following law</td>
+<td><strong>IDM</strong> (Treiber et al. 2000); <strong>Gipps</strong> (1981)</td>
+<td><code>following/models.py</code>, unchanged; the same published-equation implementations and authored low-speed parameters as v4/v5</td>
+</tr>
+<tr>
+<td>Signal program</td>
+<td><strong>concurrent</strong> (walk and left-turn green start together, as in v5); <strong>LPI</strong> (a 5 s leading pedestrian interval: the crossing shows walk while the left turn is still red)</td>
+<td>change C2. The vehicle green still ends at G. The pedestrian phases are unchanged. 5 s lies inside the 3–7 s range usually recommended for LPIs.</td>
+</tr>
+</tbody>
+</table>
+<p>Each scenario keeps its own G and F.</p>
+<p><strong>Grid:</strong> 80 scenarios × 3 × 2 × 2 = <strong>960 episodes</strong>, run once each. There are no retries selected on outcome; a failed episode is reported.</p>
+<h2>3. Repairs of the v5 failures (changes C3, C4, and the contact measure)</h2>
+<ul>
+<li><strong>C3: walkers pass a stopped car.</strong> A car stopped with its nose on the zebra used to wait for the walkers, while the walkers waited at its body until the scenario ended.<ul>
+<li>The rule (rule 2; see section 6 for why rule 1 was replaced): once a car has stood still (v &lt; 0.1 m/s) for 2.0 s with its body on the zebra, a walker whose remaining path it blocks goes round the car's nose.<ul>
+<li>It first steps sideways onto the line 0.4 m in front of the nose, then walks on along that line.</li>
+<li>It may step up to 1.5 m beyond the paint (rule 2b; it was 0.3 m).</li>
+</ul>
+</li>
+<li>A hard floor of 0.2 m body gap applies to any step that closes on the car. A walker already touching the car may only step away from it.</li>
+<li>The car still waits, because the walker is in its protective corridor.</li>
+<li>If the nose leaves no room inside that limit, the walker waits as before.</li>
+<li>E-bike riders keep their fixed path and are unchanged.</li>
+<li>Time spent going round counts as "slowed by a vehicle" (the reason list keeps <code>body_guard:car_X</code>), so the cost is not hidden.</li>
+</ul>
+</li>
+<li><strong>C4: spawn retry.</strong> A crosser whose spawn point is occupied is spawned higher and placed kinematically. In v5, all four runs of S2_327 failed at spawn.</li>
+<li><strong>Contacts:</strong> body-polygon gaps ≤ 0 between any car and any crosser, taken from the logged polygons (the v5 gate G2 rule). The collision sensor count is also reported, but it cannot see the kinematic, invincible walkers.</li>
+</ul>
+<h2>4. Measures</h2>
+<p>The v5 measure code (<code>analysis/measures.py</code>, <code>analysis/progress_v5.py</code>) is copied unchanged. LPI time spent waiting at the stop line counts as vehicle standing, because it is a real cost to drivers.</p>
+<p><strong>Person side</strong></p>
+<ul>
+<li>Primary: held + slowed by vehicles (person·s per scenario).</li>
+<li>Close passes (PET &lt; 1.5 s).</li>
+<li>Share of encounters in which the person went first.</li>
+<li>Mean progress delay.</li>
+<li>Close passes involving the follower cars.</li>
+<li>Crossings completed before the green ends.</li>
+</ul>
+<p><strong>Driver side</strong></p>
+<ul>
+<li>Primary: cars standing before the full turn (vehicle·s).</li>
+<li>Turns completed before the green ends.</li>
+<li>Time the lead car clears the zebra.</li>
+</ul>
+<p><strong>Checks</strong></p>
+<ul>
+<li>Polygon contacts.</li>
+<li>Mutual standstills (the v5 post hoc definition, now computed for every run).</li>
+<li>Pass-rule steps.</li>
+<li>Spawn retries.</li>
+</ul>
+<h2>5. Hypotheses (directional unless stated)</h2>
+<p>The unit is the scenario. Conditions are paired within a scenario. Each contrast is the mean over scenarios of a within-scenario difference, with a paired bootstrap 95% interval (4000 resamples, fixed seed). A prediction is supported when its interval excludes 0 in the predicted direction.</p>
+<p>The primary contrasts use the pooled 80 scenarios. Each one is also reported by source (S0, S1), by follower law and by signal. There are six primary contrasts (H5a, H5b, H6a–c, H7), and the intervals are not corrected for multiplicity.</p>
+<ul>
+<li><strong>H5: the paradigm moves cost from people to drivers.</strong> Comparing the courteous lead with the reactive lead (P3 − P1), averaged over follower law and signal:<ul>
+<li>H5a: person held + slowed is lower;</li>
+<li>H5b: vehicle standing is higher.</li>
+</ul>
+</li>
+<li><strong>H6: a leading pedestrian interval changes who goes first.</strong> Comparing LPI with concurrent, averaged over lead and follower:<ul>
+<li>H6a: the person-first share is higher;</li>
+<li>H6b: lead-car close passes are fewer;</li>
+<li>H6c: vehicle standing is higher.</li>
+</ul>
+</li>
+<li><strong>H7: the signal can substitute for courtesy.</strong> The reactive − courteous gap in person held + slowed is smaller under LPI than under concurrent. This is the interaction contrast (P1 − P3)_LPI − (P1 − P3)_concurrent &lt; 0.</li>
+<li><strong>H8: the follower law (no direction stated).</strong> Gipps − IDM in person held + slowed, follower close passes and vehicle standing, with intervals. It is reported as an estimate, not as a test of a prediction.</li>
+<li><strong>Check C (repair):</strong> no run ends in a mutual standstill, and polygon contacts are reported with their count.</li>
+</ul>
+<p><strong>Replay figure selection (fixed before the grid).</strong></p>
+<ul>
+<li>Take the LLM scenarios (S1) whose person held + slowed under the reactive lead with IDM followers changes between concurrent and LPI.</li>
+<li>Of those, the paper shows the one whose change is the median, rounding down for an even count. It is drawn for both signal programs, from the run logs.</li>
+<li>The four instants are chosen for legibility and stated in the caption.</li>
+</ul>
+<p><strong>Exploratory, labelled as such:</strong></p>
+<ul>
+<li>relations of the outcomes to each scenario's G and F;</li>
+<li>the six-cell (lead × signal) "who pays" plane;</li>
+<li>event rates for the v5 briefs.</li>
+</ul>
+<h2>6. Gates before registration (<code>runs/gates/G6</code>, <code>analysis/gates_v6.py</code>)</h2>
+<ul>
+<li><strong>G6a (reproduction).</strong> With <code>--follower idm --signal concurrent --pass-stopped off</code>, three v5 runs (S0_201 P1, S1_B1_01 P2, S1_B3_01 P3) give identical v5 measures.<ul>
+<li>This was checked with the first code (<code>v5repro</code>), with rule 2 (<code>v5repro2</code>) and with the final frozen code (<code>v5repro3</code>). All nine runs are identical to v5.</li>
+</ul>
+</li>
+<li><strong>G6b (repair).</strong> With the pass rule on, none of the 11 v5 standstill runs ends in a standstill, and none has a polygon contact.<ul>
+<li>These are grid scenarios whose v5 outcomes were already known from the post hoc analysis.</li>
+<li>The pass-rule constants (2.0 s, 0.4 m, 0.3 m, 0.2 m) were fixed before G6b ran and are not tuned on its outcome measures.</li>
+<li>If the gate fails, the rule is changed, the change is recorded here, and the gate is rerun.</li>
+</ul>
+</li>
+<li><strong>G6b record, rule 1 → rule 2 (9 November, before any grid run).</strong> The first version of C3 failed G6b on S0_202 P1 and S0_220 P1. Both still ended in a standstill. These runs are kept in <code>runs/gates/G6_rule1/</code>.<ul>
+<li><strong>Failure 1 (S0_220).</strong> The walker aimed at its guide point 0.6 m ahead plus a sideways offset. It cut the car's corner and froze at the 0.2 m floor, 0.14 m from the body.</li>
+<li><strong>Failure 2 (S0_202).</strong> The reactive car rolled into a walker at 0.07 m/s at 21.05 s. This is the v5 body touch, from the unchanged car-side protective stop, and it happened before the pass rule could act. The floor then stopped that walker for good, and the people behind it queued on it.</li>
+<li><strong>Rule 2.</strong> The walker steps sideways, without advancing along its guide, until it is on the line 0.4 m in front of the nose; then it walks on along that line. The 0.2 m floor now stops only steps that close on the car. A walker already touching the car may step away from the car's centre at up to 0.5 m/s.</li>
+<li>The constants were unchanged. With rule 2, G6b passed 10 of 11 runs. These runs are kept in <code>runs/gates/G6_rule2/</code>.</li>
+<li>The exception was S0_226, with gap acceptance and a 1.5 s delay. After the first walkers passed, follower 1 crept on until its nose was 2.69 m into the 2.5 m zebra, past the far edge. The runner beside it then had no room in front of the nose within the 0.3 m paint margin, so it waited as in v5, and the car waited for it.</li>
+<li><strong>Rule 2b</strong> raises the margin beyond the paint from 0.3 m to 1.5 m. Walking round the front of a car that blocks the whole crossing means stepping into the road.</li>
+<li>With rule 2b, S0_226 no longer ended in a standstill. These runs are kept in <code>runs/gates/G6_rule2b/</code>.<ul>
+<li>But a contact began under the pass rule. The runner started 0.09 m from the car, inside the floor. The closing test checked a step straight towards its target, while the walker's heading turns at most 1.5 rad/s, so its first real steps brushed the car.</li>
+</ul>
+</li>
+<li><strong>Rule 2c</strong> tests the step the walker will actually take: its command heading turned towards the target by at most 1.5 rad/s × 0.05 s, plus its current velocity if it is moving. A walker inside the floor therefore waits until it has turned away from the car.</li>
+<li>G6b and G6d were rerun with rule 2c in <code>runs/gates/G6/</code>. The G6a reproduction runs (<code>v5repro2</code>, pass rule off) do not touch the pass-rule code.</li>
+<li>Because the S0_202 touch comes from the car side, which v6 does not change, the G6b contact criterion is restated as follows: no contact may begin while the pass rule is active for that person. Contacts from the car side are counted and reported in every run.</li>
+</ul>
+</li>
+<li><strong>G6c (spawn).</strong> S2_327 completes under P1–P4 with the v5 settings. These four runs complete the v5 grid as a labelled supplement; they are not part of v6.</li>
+<li><strong>G6d (sanity).</strong> Gipps followers with LPI complete. No car enters the junction before 5 s. The SUMO program carries the LPI phase.</li>
+</ul>
+<h2>7. What may be claimed</h2>
+<ul>
+<li>Effects of the lead paradigm, follower law and signal program on simulated proxies of how and when people and drivers progress, at one CARLA junction, for these two scenario populations.</li>
+<li>No claims about trust, comfort, real behaviour, or real signal performance.</li>
+<li>The LPI is one assumed duration. The car-following parameters are authored low-speed values, not calibrated.</li>
+</ul>
+<h2>8. Isolation</h2>
+<ul>
+<li>CARLA port 2210 only (never 2000).</li>
+<li>The rule service is the v6 copy, on port 8796.</li>
+<li><code>TEMP</code>/<code>TMP</code> point to <code>runs/tmp</code>, and <code>PYTHONDONTWRITEBYTECODE=1</code>.</li>
+<li>Before/after fingerprints are in <code>integrity/</code>.</li>
+<li>The v5 folder is read-only.</li>
+</ul>
+  </article>
+</main>
+</body>
+</html>

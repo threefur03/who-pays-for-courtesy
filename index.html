@@ -1,0 +1,759 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Who Pays for Courtesy?</title>
+<meta name="description" content="Supplementary material for an AAAI-27 workshop paper: who waits, and who passes close, when turning cars and people share a signalised crosswalk.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 22'%3E%3Crect x='1' y='1' width='30' height='20' rx='2' fill='white' stroke='%23232323' stroke-width='2'/%3E%3Cpath d='M7 1v20M13 1v20M19 1v20M25 1v20' stroke='%23232323' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/css/site.css">
+<script>try{var t=localStorage.getItem("site-theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+</head>
+<body>
+<div class="shell">
+
+<aside class="rail" aria-label="Contents">
+  <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true"></span>Who pays for courtesy?</a>
+  <nav>
+    <ol>
+      <li><a href="#brief">Four points</a></li>
+      <li><a href="#question">The story</a></li>
+      <li><a href="#found">What we found</a></li>
+      <li><a href="#replays">Replays</a></li>
+      <li><a href="#next">What comes next</a></li>
+      <li><a href="#details">Detailed results</a></li>
+    </ol>
+  </nav>
+  <div class="rail-foot">Supplementary material for an AAAI-27 workshop paper.
+    <br><button class="theme-btn" type="button" data-theme-toggle>Toggle theme</button></div>
+</aside>
+
+<main class="main" id="top">
+  <div class="mobile-bar">
+    <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true"></span>Who pays for courtesy?</a>
+    <select aria-label="Jump to section" data-jump>
+      <option value="#top">Top</option>
+      <option value="#brief">Four points</option><option value="#question">The story</option>
+      <option value="#found">What we found</option><option value="#replays">Replays</option>
+      <option value="#next">What comes next</option><option value="#details">Detailed results</option>
+    </select>
+  </div>
+
+  <header class="hero">
+    <div class="kicker">Supplementary material · AAAI-27 workshop paper</div>
+    <h1>Who pays for <span class="z">courtesy</span> at the crosswalk?</h1>
+    <p class="subtitle">A self-driving car that gives way to people at a crosswalk saves them time, and the cars queued behind it pay
+      for that time. We tested twelve driving planners, from simple rules to open-source driving systems, and kept the account for
+      everyone at the crossing. Ranked on the test car alone, the planners that share one speed come out in a very different order.</p>
+    <div class="links">
+      <a class="btn" href="#question">The story</a>
+      <a class="btn" href="#found">Findings</a>
+      <a class="btn" href="#replays">Replays</a>
+      <a class="btn" href="#details">For reviewers</a>
+      <span class="btn" aria-disabled="true">Code: released after review</span>
+    </div>
+  </header>
+
+  <!-- ===================================================================================== 01 -->
+  <section class="sec" id="brief">
+    <div class="sec-num">01</div>
+    <h2>The study in four points</h2>
+    <div class="brief-grid">
+      <div class="brief-card"><div class="bnum">1</div><h3>Why we did this</h3>
+        <p>A turning car and the people crossing in front of it often share one green light. Every second the car gives way saves
+          people time and costs the cars behind it time. Tests of self-driving cars usually score only the car under test, so they
+          cannot show who pays for its choices.</p></div>
+      <div class="brief-card"><div class="bnum">2</div><h3>How we modelled it</h3>
+        <p>A simulated left turn in CARLA with the car under test, two cars behind it, a delivery motorcycle, and walkers, a runner
+          and e-bike riders who react to the signal and to the vehicles they can see. Every car is 4.67 m long, the median of the
+          cars recorded at a real Tianjin junction. Twelve planners drove the test car, under four signal programs and four ways for
+          the cars behind to follow, over 120 scenarios: 40 calibrated to recorded gaps, 40 written by an LLM agent and 40 rebuilt
+          from recorded signal cycles. In 5,160 runs we counted everyone's waiting and every close pass.</p></div>
+      <div class="brief-card"><div class="bnum">3</div><h3>What we found</h3>
+        <ul>
+          <li><b>The LLM agent hits the brief.</b> 74% of its scenarios produced the interaction we asked for, against 51% for the
+            same model without the brief, 31% without the junction's timing and 13% for random draws.</li>
+          <li><b>Whose cost you count picks the winner.</b> Among the planners that share one speed, the order by the test car
+            barely matches the order by everyone's cost.</li>
+          <li><b>The crosswalk modules protect people most</b> and make the queue pay; the fast CARLA agents cost everyone least
+            only because they reach the crosswalk before the walkers.</li>
+          <li><b>The cars behind make most close passes</b> (63%), which a test of the lead car alone never sees.</li>
+          <li><b>Human drivers give way by timing.</b> At the recorded junction pedestrians went first as often as under the most
+            courteous planners, and no driver stopped on the turn.</li>
+        </ul></div>
+      <div class="brief-card"><div class="bnum">4</div><h3>How to use it, and what comes next</h3>
+        <p>Test a self-driving car together with the queue behind it and count everyone at the crossing. Planners should expect a
+          person at the kerb to step out, give way by timing rather than stopping on the turn, and not rely on arriving first. Give
+          pedestrian head starts where people are waiting. Next, we will add learned and language-model driving agents, a crosswalk
+          without signals and more real junctions.</p></div>
+    </div>
+  </section>
+
+  <!-- ===================================================================================== 02 -->
+  <section class="sec" id="question">
+    <div class="sec-num">02</div>
+    <h2>The story</h2>
+    <p>Picture a left turn at a busy junction. The turning cars and the people on the crosswalk ahead often get their green at the
+      same moment, so the driver has to find a gap between people. If the car goes early, people wait or step back. If it waits, the
+      cars behind it wait too, and some may miss the green.</p>
+    <figure class="hero-video">
+      <video controls preload="none" playsinline poster="assets/video/S1_B3_04_reactive_concurrent.jpg">
+        <source src="assets/video/S1_B3_04_reactive_concurrent.mp4" type="video/mp4"></video>
+      <figcaption>One simulated run on a shared green: the lead car turns while walkers are on the crosswalk, seen from behind the
+        car, from its front and from above.</figcaption>
+    </figure>
+    <p>So who should give way, and who pays for it? A car that waits protects the people crossing but holds up every car behind it.
+      A car that goes early saves the queue time and leaves people waiting at the kerb or stepping back. Tests of self-driving cars
+      usually score only the car under test, which shows one side of this exchange. We built a test that keeps the account for
+      everyone at the crossing.</p>
+
+    <div class="callout" id="agentic">
+      <h4>Where agentic AI comes in, and why it matters</h4>
+      <ul class="plain">
+        <li><b>The car under test is a driving agent.</b> It perceives, decides and acts on its own goal among people who have
+          goals of their own. Judged on its own progress and safety, the agent that hands most of its cost to others looks best.
+          This test counts what each agent's choices cost the people crossing and the cars behind it.</li>
+        <li><b>An LLM agent writes the test cases.</b> Given a plain-language brief such as “a runner arrives as the green man
+          flashes”, it drafts a scenario, calls a rule checker as a tool and revises whatever the checker rejects. It never drives
+          and never sees a test result, so every scenario is stored, hashed and identical for every planner. We remove one part
+          at a time (the brief, the junction knowledge, the language model itself) to measure what each part adds: with all of them, 74% of its scenarios produce the interaction asked for; without
+          the brief 51%, without the junction knowledge 31%, and without the language model 13%.</li>
+        <li><b>Everyone around the car reacts.</b> Walkers, riders, the motorcycle and the cars behind respond to what the car
+          under test does, so its effect on them can only be measured in closed loop.</li>
+        <li><b>Next:</b> the same interface (go, creep or wait, and a target speed, once a second) accepts an LLM or vision-language
+          driving agent.</li>
+      </ul>
+    </div>
+
+    <div class="callout" id="workshop-questions">
+      <h4>Which of the workshop's questions this study answers</h4>
+      <ul class="plain">
+        <li><b>How should agentic mobility be evaluated beyond driving metrics?</b> The main question here: score everyone at
+          the crossing in closed loop, not only the car under test, and see whether the ranking of agents changes.</li>
+        <li><b>How should agents adapt to the drivers and road users around them?</b> We compare how each agent gives way with
+          how human drivers at a real junction do it, and which crossers end up with the close passes.</li>
+        <li><b>Which agent designs remain effective under the safety constraints of real vehicles?</b> In part: we count how each
+          design fails (near misses, emergency braking, a car stuck on the crosswalk at the end of its green) when the signal
+          timing changes.</li>
+        <li><b>Coordination at fleet and network scale</b> is outside this one-junction study.</li>
+      </ul>
+    </div>
+
+    <h3>How we built the test</h3>
+    <p>The test is a simulated junction in CARLA, an open-source driving simulator. Three cars wait at the stop line to turn left
+      across a crosswalk, and a delivery motorcycle turns in the next lane. The first car is the car under test, driven by one of
+      twelve planners. Eight of them look at the people they can see every second and decide whether to go, creep or wait, at up
+      to 2.5 m/s: a <b>reactive</b> car goes unless someone is directly in its path, a <b>gap-accepting</b> car goes when it predicts
+      nobody will reach its path within half a second of it, a <b>courteous</b> car wants a two-second margin, a model-predictive
+      planner, a planner that <b>creeps</b> forward to negotiate, and ports of the decision logic and default settings of three
+      open-source systems: <b>PDM-Closed</b>, a strong planner on the nuPlan benchmark, and the crosswalk rules of <b>Apollo</b> and
+      <b>Autoware</b>. The other four are the <b>driving agents that ship with CARLA</b>, which steer and brake the car themselves at
+      their own speed, 5 to 8 m/s over the crosswalk, and once more capped at the planners' 2.5 m/s. The two cars behind follow with one of four car-following models widely used
+      in traffic simulation (IDM, Gipps, Krauss and adaptive cruise control).</p>
+
+    <figure class="scene">
+      <svg viewBox="0 0 720 270" role="img" aria-labelledby="scene-t">
+        <title id="scene-t">Top-down sketch: three cars queue in the eastbound lane; the first turns left across a crosswalk where people are crossing on their own green.</title>
+        <rect class="road" x="0" y="140" width="720" height="92"/>
+        <rect class="road" x="430" y="0" width="100" height="232"/>
+        <line class="lane" x1="0" y1="186" x2="430" y2="186"/><line class="lane" x1="530" y1="186" x2="720" y2="186"/>
+        <line class="lane" x1="480" y1="0" x2="480" y2="80"/>
+        <g class="zebra"><rect x="435" y="90" width="7" height="34"/><rect x="447" y="90" width="7" height="34"/><rect x="459" y="90" width="7" height="34"/><rect x="471" y="90" width="7" height="34"/><rect x="483" y="90" width="7" height="34"/><rect x="495" y="90" width="7" height="34"/><rect x="507" y="90" width="7" height="34"/><rect x="519" y="90" width="7" height="34"/></g>
+        <line class="stop" x1="424" y1="190" x2="424" y2="230"/>
+        <path class="turn" d="M420 210 Q505 210 505 140 L505 36"/>
+        <path class="turn-head" d="M498 46 L505 32 L512 46"/>
+        <rect class="car lead" x="380" y="200" width="38" height="20" rx="4"/>
+        <rect class="car" x="331" y="200" width="38" height="20" rx="4"/>
+        <rect class="car" x="282" y="200" width="38" height="20" rx="4"/>
+        <circle class="meet" cx="505" cy="107" r="13"/>
+        <circle class="walker" cx="458" cy="100" r="6"/><path class="walk-dir" d="M467 100 h10"/>
+        <circle class="walker" cx="520" cy="116" r="6"/><path class="walk-dir" d="M510 116 h-10"/>
+        <circle class="walker wait" cx="548" cy="104" r="6"/>
+        <text x="399" y="252" class="lbl" text-anchor="start">car under test</text>
+        <text x="372" y="252" class="lbl" text-anchor="end">two cars behind it</text>
+        <text x="562" y="100" class="lbl">people crossing</text><text x="562" y="116" class="lbl">on the same green</text>
+        <text x="418" y="111" class="lbl" text-anchor="end">crosswalk</text>
+        <text x="420" y="66" class="lbl meet-lbl" text-anchor="end">where they meet</text>
+        <path class="leader" d="M424 62 L494 98"/>
+      </svg>
+    </figure>
+
+    <p>The people crossing are walkers, a runner and e-bike riders. Each of them decides twenty times a second what to do, from the
+      signal and from the vehicles they can see; a car body can block their view, and the rider's view of them. A walker steps off
+      only when the gap to the next moving vehicle is large enough for them, and each walker's gap comes from people recorded at
+      junctions in Germany (the inD dataset). People hurry when the green man flashes, and nobody starts on red. The signal gives cars
+      and people the same green; or gives people a five-second head start, a leading pedestrian interval used in many cities; or
+      gives that head start only when someone is already waiting; or keeps the turn red for cars not yet in the junction while a
+      person is near their path.</p>
+    <p>Who arrives when, how fast and how patient they are is set by the scenario. Forty of our 120 scenarios use a calibrated
+      population: a group that leaves when the green man appears, two stragglers, a late runner and an e-bike rider, each with a gap
+      drawn from the German recordings. Forty were written by a language model from one-line briefs such as “a runner arrives after
+      the green man starts flashing and meets the turning cars”, and forty were rebuilt from recorded signal cycles (below). A rule
+      checker keeps every scenario inside the same limits and stores it, and every planner then runs on the same stored set. Every
+      planner ran on all 120 scenarios with a shared green; four of them also ran under the other three signal programs, and two
+      under two more car-following models. The CARLA agents ran again capped at 2.5 m/s, and the eight planners at one speed ran
+      on three more scenario sets that each remove one part of the LLM agent: 5,160 runs in all.</p>
+
+    <h3>Where the data come from, and why we also generate scenarios</h3>
+    <p>Three recorded datasets feed the test. They are used as recorded, and no recording is redistributed.</p>
+    <ul class="plain">
+      <li><b>inD</b> (four junctions in Aachen, Germany, filmed by drone): the gaps people accept before stepping in front of a
+        moving vehicle. Each simulated walker's patience is drawn from them, and the simulated walkers reproduce the recorded
+        10th percentile and median accepted gap within 0.4 s.</li>
+      <li><b>SinD</b> (a signalised junction in Tianjin, China, with its traffic-light states): how real left-turning drivers and
+        crossers share a green. We use it twice: as a reference for who goes first and how close they pass, and as a third set of
+        test scenarios, each rebuilt from one recorded signal cycle with the arrival times, sides, kinds and speeds of the people
+        who crossed the turning cars' path, and that cycle's green. It also sets the size of the simulated cars: 4.67 by
+        1.81 m, the median of the 4,752 cars recorded there.</li>
+      <li><b>nuPlan</b> (driving logs from four cities): how long human drivers stand when they do wait for a pedestrian, and how
+        rarely a recorded unprotected turn meets one.</li>
+    </ul>
+    <p>Recorded traffic cannot carry the whole test on its own, for two reasons. First, the people in a recording react to the
+      driver who was there. Replayed in front of a different car, they would walk into its path or wait for a gap it never left, so
+      a closed-loop test needs people who respond to the car being tested, with their patience and arrival times taken from
+      recordings. Second, the hard cases are rare in logs. Of the 57 recorded Tianjin cycles in which at least two pedestrians crossed
+      the turning cars' path, the 40 we rebuilt hold two to four walkers each, three e-bike riders in total, no runner and no
+      motorcycle; only 3 of 39 recorded unprotected turns in nuPlan met a pedestrian at all. A language model can write the
+      situations a planner has to handle, such as a group stepping off as the green man flashes, a runner arriving at the end of the
+      green or a walker hidden from a motorcyclist, on request and for under a dollar per 40 scenarios. The recorded cycles then
+      show whether a planner's ranking holds up in ordinary traffic.</p>
+    <div class="callout">
+      <h4>What we count in every run</h4>
+      <ul class="plain">
+        <li><b class="c-p">People's waiting:</b> the time each person is held or slowed by a vehicle, in person-seconds.</li>
+        <li><b class="c-v">Cars' waiting:</b> the time each car stands still before it completes the turn, in vehicle-seconds.</li>
+        <li><b>Close passes:</b> a vehicle and a person cross the same spot less than 1.5 s apart, credited to the vehicle that made it
+          and the signal phase it happened in.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===================================================================================== 03 -->
+  <section class="sec" id="found">
+    <div class="sec-num">03</div>
+    <h2>What we found</h2>
+    <p>The table ranks the twelve planners on a shared green with IDM followers. Lower is better in every column except the ranks,
+      where 1 is best.</p>
+    <div class="table-wrap"><table id="bank-table">
+      <thead>
+        <tr><th rowspan="2">Planner for the car under test</th><th class="n" colspan="3">People's waiting (person·s)</th>
+          <th class="n" colspan="3">Cars' waiting (vehicle·s)</th><th class="n" rowspan="2">Close passes per run</th>
+          <th class="n" rowspan="2">Still on the turn at end of green</th><th class="n" rowspan="2">Rank, own car</th>
+          <th class="n" rowspan="2">Rank, everyone</th></tr>
+        <tr><th class="n">calibrated</th><th class="n">LLM</th><th class="n">recorded</th><th class="n">calibrated</th>
+          <th class="n">LLM</th><th class="n">recorded</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Reactive (rule)</td><td class="n">16.2</td><td class="n">10.9</td><td class="n">4.1</td><td class="n">25.4</td><td class="n">14.6</td><td class="n">14.2</td><td class="n">2.26</td><td class="n">0%</td><td class="n">9</td><td class="n">12</td></tr>
+        <tr><td>Gap acceptance (rule)</td><td class="n">6.1</td><td class="n">11.0</td><td class="n">2.1</td><td class="n">55.3</td><td class="n">17.8</td><td class="n">20.3</td><td class="n">1.43</td><td class="n">7%</td><td class="n">6.5</td><td class="n">8</td></tr>
+        <tr><td>Courteous (rule)</td><td class="n">5.8</td><td class="n">9.0</td><td class="n">1.9</td><td class="n">60.6</td><td class="n">26.9</td><td class="n">20.8</td><td class="n">1.36</td><td class="n">12%</td><td class="n">12</td><td class="n">9</td></tr>
+        <tr><td>Model-predictive (MPC)</td><td class="n">5.2</td><td class="n">10.7</td><td class="n">1.9</td><td class="n">56.7</td><td class="n">24.3</td><td class="n">20.8</td><td class="n">1.33</td><td class="n">9%</td><td class="n">6.5</td><td class="n">7</td></tr>
+        <tr><td>PDM-Closed (port)</td><td class="n">14.1</td><td class="n">10.8</td><td class="n">3.2</td><td class="n">38.3</td><td class="n">15.3</td><td class="n">18.1</td><td class="n">1.96</td><td class="n">5%</td><td class="n">9</td><td class="n">10</td></tr>
+        <tr><td>Creep and negotiate</td><td class="n">11.2</td><td class="n">12.3</td><td class="n">3.2</td><td class="n">44.3</td><td class="n">17.1</td><td class="n">17.2</td><td class="n">1.58</td><td class="n">6%</td><td class="n">9</td><td class="n">11</td></tr>
+        <tr><td>Apollo crosswalk rule (port)</td><td class="n">4.4</td><td class="n">9.5</td><td class="n">1.8</td><td class="n">82.1</td><td class="n">30.7</td><td class="n">28.9</td><td class="n">1.22</td><td class="n">34%</td><td class="n">11</td><td class="n">5.5</td></tr>
+        <tr><td>Autoware crosswalk module (port)</td><td class="n">4.6</td><td class="n">10.3</td><td class="n">2.0</td><td class="n">57.1</td><td class="n">22.8</td><td class="n">21.6</td><td class="n">1.32</td><td class="n">9%</td><td class="n">5</td><td class="n">5.5</td></tr>
+        <tr><td>CARLA Basic agent</td><td class="n">6.2</td><td class="n">5.3</td><td class="n">1.4</td><td class="n">14.3</td><td class="n">10.8</td><td class="n">7.4</td><td class="n">1.18</td><td class="n">0%</td><td class="n">3.5</td><td class="n">3</td></tr>
+        <tr><td>CARLA Behavior agent, cautious</td><td class="n">5.8</td><td class="n">5.6</td><td class="n">3.1</td><td class="n">14.4</td><td class="n">11.1</td><td class="n">8.2</td><td class="n">1.19</td><td class="n">0%</td><td class="n">3.5</td><td class="n">4</td></tr>
+        <tr><td>CARLA Behavior agent, normal</td><td class="n">6.2</td><td class="n">5.2</td><td class="n">1.4</td><td class="n">14.3</td><td class="n">10.7</td><td class="n">7.3</td><td class="n">1.17</td><td class="n">0%</td><td class="n">2</td><td class="n">1.5</td></tr>
+        <tr><td>CARLA Behavior agent, aggressive</td><td class="n">6.4</td><td class="n">5.2</td><td class="n">1.4</td><td class="n">14.0</td><td class="n">10.8</td><td class="n">7.3</td><td class="n">1.16</td><td class="n">0%</td><td class="n">1</td><td class="n">1.5</td></tr>
+        <tr><td>CARLA agents capped at 2.5 m/s (all four alike)</td><td class="n">7.1</td><td class="n">6.1</td><td class="n">3.9</td><td class="n">14.4</td><td class="n">11.2</td><td class="n">9.3</td><td class="n">1.62</td><td class="n">0%</td><td class="n">–</td><td class="n">–</td></tr>
+      </tbody>
+    </table></div>
+    <p class="small muted">Means over the 40 scenarios of each set. Close passes count every vehicle, all 120 scenarios. “Rank by
+      own car” uses how soon the test car clears the crosswalk and its own close passes; “rank by everyone” uses both sides' waiting,
+      all close passes and near-misses. The first eight planners share a 2.5 m/s limit; the CARLA agents drive at their own speed,
+      and the last row runs them at the same 2.5 m/s limit. The three ports reproduce each system's published decision logic and
+      default settings at this junction, not the full software.</p>
+    <figure>
+      <div class="frame"><img src="assets/img/b_fig_bank.png" alt="Four panels. Three scatter plots of cars' waiting against people's waiting for the twelve planners in calibrated, LLM-written and recorded scenarios, and one plot of how often the lead car stopped on the turn against how often the pedestrian went first, with human drivers at the recorded junction." loading="lazy"></div>
+      <figcaption>(a–c) Who pays under each planner, by scenario set, with 95% intervals; the dashed line joins the planners that
+        no other planner beats on both sides, and hollow stars are the CARLA agents capped at 2.5 m/s. (d) How the test car gives
+        way, scored the same way as the human drivers at the recorded junction. <a class="fig-dl" href="assets/img/b_fig_bank.pdf">PDF</a></figcaption>
+    </figure>
+
+    <h3>1 · What the LLM agent adds</h3>
+    <p>We took the scenario writer apart one piece at a time and ran the eight planners that share one speed on each version
+      (960 runs). A brief is checkable when its interaction can be read off a run, for example “the lead car meets a runner who
+      arrives as the green man flashes”; 35 of the 40 LLM-written scenarios have one.</p>
+    <div class="table-wrap"><table id="ablation-table">
+      <thead><tr><th>Scenario set (40 each)</th><th class="n">Asked-for interaction happened</th><th class="n">Scenarios that separate planners</th>
+        <th class="n">Planners with a close call by the test car, per scenario</th><th class="n">Runs with a contact (of 320)</th></tr></thead>
+      <tbody>
+        <tr><td>LLM agent: brief, junction timing, rule checker</td><td class="n">74%</td><td class="n">36</td><td class="n">2.1</td><td class="n">15</td></tr>
+        <tr><td>… without the brief (neutral request)</td><td class="n">51% by chance</td><td class="n">37</td><td class="n">2.6</td><td class="n">12</td></tr>
+        <tr><td>… without the junction's timing</td><td class="n">31%</td><td class="n">27</td><td class="n">1.1</td><td class="n">10</td></tr>
+        <tr><td>… without the language model (random draws, same ranges)</td><td class="n">13% by chance</td><td class="n">30</td><td class="n">1.3</td><td class="n">0</td></tr>
+        <tr><td>Recorded Tianjin cycles</td><td class="n">2% by chance</td><td class="n">27</td><td class="n">0.9</td><td class="n">8</td></tr>
+      </tbody>
+    </table></div>
+    <p>With its brief and the junction's timing, the agent produced the interaction we asked for in three of four scenarios. Each
+      piece matters: without the brief the same model produced a given interaction only by chance, without the timing it mostly
+      missed, and random draws almost never did. The brief decides <em>which</em> situation is tested rather than making tests
+      harder: the version without a brief led to as many close calls. Both LLM sets separated the planners in more scenarios
+      than random draws or recorded cycles. Forty scenarios cost US$0.63.</p>
+
+    <h3>2 · Whose cost you count picks the winner</h3>
+    <p>The CARLA agents come first whether the test car alone or everyone is counted, so over all twelve the two orders agree
+      (Kendall's τ 0.69). Among the eight planners that share one speed they barely agree (τ 0.27): the reactive rule is fifth by
+      its own car and last by everyone's account. With the CARLA agents at the same speed, the orders disagree again (τ 0.19).
+      Much of what a test of the lead car misses lands on the cars behind it: they made 63% of the close passes, the lead car 18%
+      and the motorcycle 19%. Contacts happened in 38 of 1,440 runs, all below 1.3 m/s and 33 of them by a car behind the test car,
+      usually reaching a person who had stopped beside its path.</p>
+
+    <h3>3 · The crosswalk modules protect people, and the queue pays</h3>
+    <p>Among the eight planners at one speed, the Apollo and Autoware crosswalk logic, MPC and the courteous rule keep people's
+      waiting lowest, at 3.3 to 5.7 seconds of car time for each second of people's time saved. Apollo protects most and costs
+      most: on the calibrated scenarios the three cars stand 82 seconds per run, and in 34% of runs the test car is still short of
+      clearing the crosswalk when its green ends. Autoware and MPC protect nearly as well for 25 seconds less. The reactive rule,
+      PDM-Closed and creeping protect people least. PDM-Closed expects everything to keep its current speed, so a person standing
+      at the kerb is expected to stay there; its test car made 0.64 close passes per run, against 0.14 to 0.26 for the planners
+      that allow a waiting person to step out.</p>
+
+    <h3>4 · The fast CARLA agents arrive first instead of giving way</h3>
+    <p>At their own speed the CARLA agents cross at 5 to 8 m/s and clear the crosswalk 5 to 6 seconds into the green, before most
+      walkers reach the cars' lane, so they cost everyone least. Capped at the planners' 2.5 m/s, their four styles behave
+      identically: their test car's close passes rose from 0.02–0.04 to 0.46 per run, they needed the emergency brake in 12% of
+      runs, pedestrians went first in only 8% of their encounters, and they never stopped on the turn. Their logic does not give
+      way to people; arriving first, or the emergency brake we added, does. With a five-second head start for people, the normal
+      agent needed the emergency brake in 12% of runs at its own speed and in 38% at 2.5 m/s.</p>
+
+    <h3>5 · Generated scenarios separate planners more often than recorded ones</h3>
+    <p>The planners' cost to people differed by more than one person-second in 36 of 40 LLM-written scenarios, 40 of 40 calibrated
+      ones and 27 of 40 recorded ones (Fisher p = 0.027 for LLM-written against recorded). In recorded traffic every planner cost
+      people between 1.4 and 4.1 person-seconds: ordinary cycles rarely hold the situations that make a planner choose.</p>
+
+    <h3>6 · A head start for people helps only with the right planner</h3>
+    <p>A five-second head start cut people's waiting by 4.7 person-seconds behind the reactive rule, changed nothing measurable
+      behind the planners that already give way, and added 4.1 person-seconds behind the fast CARLA agent. Giving the head start
+      only when someone is waiting saved the cars 4.0 seconds per run against a fixed head start, with no measurable cost to people;
+      holding the turn red while a person is near the cars' path cost 2.4 seconds and did not reduce the close passes of the cars
+      behind.</p>
+
+    <h3>7 · Human drivers give way by timing, not by stopping</h3>
+    <p>We scored the 449 left-turning drivers recorded at the Tianjin junction the same way. None of them stopped on the turn, yet
+      pedestrians went first in 60% of their encounters and only 2.2% were close: the drivers timed their approach. The eight
+      planners at one speed stopped on the turn in 26 to 67% of runs, and only the courteous rule, MPC and Autoware came near the
+      drivers' pedestrian-first share; the CARLA agents almost never let a pedestrian go first. The drivers do push for the green,
+      and e-bike and bicycle riders took the close passes (19% of their encounters).</p>
+
+    <h3>8 · The size of the car matters</h3>
+    <p>Our earlier runs used CARLA's Nissan Micra, 3.63 m long; real cars at the junction are a metre longer. With the
+      recorded size, every planner at one speed held people 2.5 to 3.5 person-seconds longer per run, and the order by everyone's
+      cost changed (τ 0.51 between the two). All results on this page use the recorded size, except the first stage below.</p>
+
+    <div class="callout">
+      <h4>What the results suggest for planners</h4>
+      <ul class="plain">
+        <li><b>Expect the person at the kerb to step out.</b> Planners that treat a standing person as able to start at any moment
+          made less than half the close passes of one that does not.</li>
+        <li><b>Give way by timing, not by stopping on the turn</b>, as the human drivers did.</li>
+        <li><b>Bound the wait.</b> A car that is still on the turn when its green ends holds up everyone behind it.</li>
+        <li><b>Yield to the person, not to the clock.</b> A planner that is safe only because it arrives first fails when the
+          signal timing changes.</li>
+        <li><b>Treat riders and runners as their own class</b>; they get the close passes in simulation and in recorded traffic.</li>
+        <li><b>Match the signal to the planner</b>, and give the head start when someone is waiting.</li>
+        <li><b>Test with generated scenarios as well as recorded ones</b>, and score everyone at the crossing.</li>
+      </ul>
+    </div>
+
+    <h3>The first stage: three rule-based styles in 960 runs</h3>
+    <p>Before the twelve-planner test, the three rule-based styles ran on the calibrated and LLM-written scenarios under two
+      car-following models and two signal programs, with CARLA's smaller 3.63 m car. These results explain where the costs
+      above come from.</p>
+    <div class="ledger" aria-label="Summary ledger">
+      <div class="ledger-rows">
+        <div class="lh l">What changes</div><div class="lh p">People's waiting</div><div class="lh v">Cars' waiting</div>
+        <div class="lever">Courteous lead car instead of a reactive one<small>all 80 scenarios</small></div>
+        <div class="amt p">−3.5 person·s<small>[−4.9, −2.2]</small></div>
+        <div class="amt v">+18.0 vehicle·s<small>[13.4, 22.9]</small></div>
+        <div class="lever">5 s head start for people<small>40 calibrated scenarios</small></div>
+        <div class="amt p">−2.7 person·s<small>[−4.5, −1.1] †</small></div>
+        <div class="amt v">−8.6 vehicle·s<small>[−13.5, −3.7]</small></div>
+        <div class="lever">5 s head start for people<small>40 LLM-written scenarios</small></div>
+        <div class="amt p">−0.3 person·s<small>[−2.8, 2.0] †</small></div>
+        <div class="amt v">+15.3 vehicle·s<small>[10.6, 19.7]</small></div>
+      </div>
+      <div class="ledger-foot">Change per run, paired within scenario, with 95% bootstrap intervals. Negative numbers mean less waiting. † exploratory analysis.</div>
+    </div>
+
+    <h3>9 · Courtesy moves the wait onto the queue</h3>
+    <p>A courteous lead car gives way more often. People wait about 3.5 person-seconds less per run, and the three cars stand about
+      18 vehicle-seconds longer: roughly five seconds of car time for each second of people's time. The trade appears in most
+      scenarios and in both scenario sources.</p>
+    <figure>
+      <div class="frame"><img src="assets/img/supp_tradeoff.png" alt="Scatter of per-scenario changes: most scenarios show people waiting less and cars waiting more under a courteous lead car." loading="lazy"></div>
+      <figcaption>Each dot is one scenario, courteous minus reactive lead car. Left means people wait less; up means cars wait more.
+        With the head start (right), courtesy has less left to give. <a class="fig-dl" href="assets/img/supp_tradeoff.pdf">PDF</a></figcaption>
+    </figure>
+
+    <h3>10 · A head start for people works when people are already waiting</h3>
+    <p>With a 5-second leading pedestrian interval, people step off before the cars get their green. In the calibrated scenarios,
+      where three walkers are typically at the kerb when it begins, it shortens the wait for both sides and does much of courtesy's
+      job: courtesy saves people 5.8 person-seconds with a shared green and 1.1 with the head start. In the LLM-written scenarios
+      people mostly arrive later, so the head start costs the cars time and saves people little.</p>
+    <figure>
+      <div class="frame"><img src="assets/img/supp_lpi_kerb.png" alt="Per-scenario effect of the head start on people and cars against the number of walkers at the kerb when it begins." loading="lazy"></div>
+      <figcaption>Each dot is one scenario: the head start's effect on people (left) and on cars (right), against the number of walkers
+        released at the start of the walk signal. Grey: calibrated; blue: LLM-written. <a class="fig-dl" href="assets/img/supp_lpi_kerb.pdf">PDF</a></figcaption>
+    </figure>
+
+    <h3>11 · Most close passes come from the cars behind</h3>
+    <p>The lead car, the one usually under test, makes a quarter of the close passes. The two cars behind it make almost half, and
+      80% of theirs happen late, while the signal shows flashing or red to people. The delivery motorcycle makes the rest. Per
+      vehicle, a follower makes fewer close passes than an equally reactive lead car (0.50 against 0.84 per run); the followers'
+      larger share comes from their number and their late timing.</p>
+    <figure>
+      <div class="frame"><img src="assets/img/fig_micro.png" alt="Paper Figure 4: who goes first over time, how close the lead car passes, close passes by vehicle role and phase, and waiting by kind of crosser." loading="lazy"></div>
+      <figcaption>(a) Share of encounters the person wins, by time since the car's green, with real-traffic points from SinD.
+        (b) How close the lead car passes. (c) Close passes per run by vehicle, split by the people's signal phase; hatched bars have
+        the head start. (d) Waiting per person by kind of crosser.</figcaption>
+    </figure>
+
+    <h3>12 · A lesson about generated scenarios</h3>
+    <p>The LLM-written scenarios mostly realised their briefs, yet in 9 of 40 the lead car met nobody and the cars behind it met the
+      people instead. We tested two fixes in 480 more runs: giving the model corrected timing, and letting it start a person when a
+      chosen car comes near the crosswalk. Neither helped: the lead car still met nobody in 8 of 40 scenarios with either fix.
+      Most of the misses came from two briefs that point at other vehicles: a group arriving near the end of the green, after the
+      lead car has gone, and a walker hidden from the motorcycle. The model writes what it is asked for, so the brief should say
+      which vehicle the scenario is meant to test (<a href="#d-generator">details</a>).</p>
+  </section>
+
+  <!-- ===================================================================================== 04 -->
+  <section class="sec" id="replays">
+    <div class="sec-num">04</div>
+    <h2>Replays</h2>
+    <h3>Same LLM-written scenario, six driving agents</h3>
+    <p>The late-runner scenario (brief B3) under six lead cars, replayed in CARLA from the run logs at real speed for the first
+      24 seconds: the reactive rule, the PDM-Closed port, the Autoware and Apollo crosswalk ports, the CARLA Behavior agent at its
+      own speed and the same agent capped at 2.5 m/s.</p>
+    <div class="tabs" role="tablist" data-tabs="six">
+      <button class="tab" role="tab" aria-selected="true" data-src="S1_B3_04_six_agents_chase">Behind the car</button>
+      <button class="tab" role="tab" aria-selected="false" data-src="S1_B3_04_six_agents_bev">From above</button>
+    </div>
+    <video class="wide-video" id="six-video" controls preload="none" playsinline poster="assets/video/S1_B3_04_six_agents_chase.jpg">
+      <source src="assets/video/S1_B3_04_six_agents_chase.mp4" type="video/mp4"></video>
+    <figure>
+      <div class="frame"><img src="assets/img/b_fig_replay.png" alt="Six columns, one per driving agent, at the same moment of the same scenario: a camera behind the lead car and a camera above the crosswalk with the last three seconds of each person's and the car's path." loading="lazy"></div>
+      <figcaption>The same moment (t = 14 s) under the six agents. The reactive and PDM-Closed cars enter 0.85 s ahead of a walker;
+        Autoware waits and lets the walker go first; Apollo waits until 9 s after its green has ended; the CARLA agent has already
+        crossed before the walkers came, at its own speed and at 2.5 m/s alike. <a class="fig-dl" href="assets/img/b_fig_replay.pdf">PDF</a></figcaption>
+    </figure>
+
+    <h3>Same scenario, three lead cars</h3>
+    <p>From the first stage, with CARLA's smaller car: each video plays the same scenario three times side by side (reactive,
+      gap-accepting and courteous lead car), drawn from the run logs.</p>
+    <div class="tabs" role="tablist" data-tabs="topdown">
+      <button class="tab" role="tab" aria-selected="true" data-src="topdown_S1_B3_04_concurrent">Late runner · shared green</button>
+      <button class="tab" role="tab" aria-selected="false" data-src="topdown_S1_B3_04_lpi">Late runner · head start</button>
+      <button class="tab" role="tab" aria-selected="false" data-src="topdown_S0_207_concurrent">Calibrated · shared green</button>
+      <button class="tab" role="tab" aria-selected="false" data-src="topdown_S0_207_lpi">Calibrated · head start</button>
+    </div>
+    <video class="wide-video" id="topdown-video" controls preload="none" playsinline poster="assets/video/topdown_S1_B3_04_concurrent.jpg">
+      <source src="assets/video/topdown_S1_B3_04_concurrent.mp4" type="video/mp4"></video>
+    <p class="small muted">Twice real speed, first 60 s. A red ring marks a person held by a vehicle, amber a person slowed, and a dotted
+      ring a person waiting for their signal. The totals under each panel are that run's measures. The calibrated scenario (S0_207) is the
+      one whose courtesy effect is closest to the calibrated median.</p>
+
+    <h3>With a head start for people</h3>
+    <div class="video-card narrow">
+      <video controls preload="none" playsinline poster="assets/video/S1_B3_04_reactive_lpi.jpg">
+        <source src="assets/video/S1_B3_04_reactive_lpi.mp4" type="video/mp4"></video>
+      <div class="vc-body">The run shown in the story above (brief B3, late runner), now with a 5-second head start (reactive lead car).
+        Once a car is 8 m past the crosswalk, the video speeds it up to 30 km/h for viewing; in the simulation every car's desired speed is 2.5 m/s.</div>
+    </div>
+  </section>
+
+  <!-- ===================================================================================== 05 -->
+  <section class="sec" id="next">
+    <div class="sec-num">05</div>
+    <h2>What comes next</h2>
+    <div class="trio-wrap">
+      <div>
+        <h3>How the results can be used</h3>
+        <ul class="plain">
+          <li><b>Testing automated cars.</b> Score the car together with the traffic behind it and the people around it, in the same
+            run, and report both sides' waiting and close passes by vehicle and signal phase.</li>
+          <li><b>Comparing planners.</b> The twelve-planner table above can take any planner that reads the same observation; report
+            both rankings and the failure counts, not only the test car's.</li>
+          <li><b>Signal timing.</b> A pedestrian head start pays off where people are waiting and behind a car that does not give way
+            by itself; giving it on demand returned 4 seconds of the queue's time per cycle.</li>
+          <li><b>Scenario generation.</b> Tell the generator which vehicle a scenario should test, and check in a closed-loop run
+            which vehicle it actually reached.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Next stage</h3>
+        <ul class="plain">
+          <li><b>Learned and language-model driving agents.</b> The same interface (go, creep or wait, and a target speed, once a
+            second) takes them; we will also run every planner at speeds taken from recorded data.</li>
+          <li><b>More places and road users.</b> An unsignalised zebra (with the uniD dataset as reference), other turns, and
+            followers that plan for themselves.</li>
+          <li><b>More real traffic.</b> The comparison with human drivers covers one junction where pedestrians share the turning
+            green. More junctions, and studies with people, are needed before saying how people would experience these outcomes.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================================== 06 -->
+  <section class="sec" id="details">
+    <div class="sec-num">06</div>
+    <h2>Detailed results</h2>
+    <p class="lede">For reviewers: the registered analysis, the figures behind the summary, the 5,160 twelve-planner runs, the first stage's 80 scenarios and 960 runs, and the frozen
+      protocol documents. Open any block.</p>
+    <p class="small muted">Short names: P1, P2, P3 = reactive, gap-accepting and courteous lead car. LPI = 5 s leading pedestrian interval
+      (head start); concurrent = shared green. S0 = calibrated scenarios, S1 = LLM-written. J<sub>P</sub> = people's waiting
+      (person·s), J<sub>V</sub> = cars' waiting (vehicle·s). Q01 = primary grid (queue at the stop line); R01 = earlier grid (queue 8 m upstream).</p>
+
+    <details class="block" id="d-method">
+      <summary><span class="bt">How the benchmark works</span><span class="bs">Pipeline figure, factors and measures</span></summary>
+      <div class="block-body">
+        <figure>
+          <div class="frame"><img src="assets/img/fig_method.png" alt="Method overview: an LLM writes scenarios from interaction briefs, a checker admits them, the closed-loop junction runs them, and the measures record who progresses and when." loading="lazy"></div>
+          <figcaption><b>Paper Figure 1.</b> (a) The LLM writes scenarios from one-line briefs; a deterministic checker admits each one and the
+            set is frozen. (b) The closed loop in CARLA 0.9.14, Town05: a permissive left turn across an 18.7 m zebra. (c) Who progresses and when.
+            <a class="fig-dl" href="assets/img/fig_method.svg">SVG (editable)</a></figcaption>
+        </figure>
+        <p>Design: 3 lead planners × 2 follower laws × 2 signal programs × 80 scenarios = 960 episodes, paired within scenario. Calibrated
+          crossers are sampled from inD-fitted gap acceptance; LLM scenarios come from 8 briefs, five each. Close passes split into exposure
+          and per-passage risk, by vehicle role <i>r</i> and signal phase <i>φ</i>:</p>
+        <div class="eq"><i>C</i> = Σ<sub><i>r</i></sub> Σ<sub><i>φ</i></sub> <i>N</i><sub><i>rφ</i></sub> · <i>ρ</i><sub><i>rφ</i></sub></div>
+        <p class="small">Lowering <i>ρ</i> makes each passage safer; lowering <i>N</i> means fewer passages. Courtesy's effect on followers is
+          therefore reported together with the 10% of followers that no longer complete the turn.</p>
+      </div>
+    </details>
+
+    <details class="block" id="d-bank">
+      <summary><span class="bt">Twelve-planner test: hypotheses H13–H23 and failures</span><span class="bs">Registered before the 5,160 runs, with verdicts; failure counts and signal effects by planner</span></summary>
+      <div class="block-body">
+        <div class="table-wrap"><table>
+          <thead><tr><th>Id</th><th>Hypothesis</th><th>Verdict</th><th>Result</th></tr></thead>
+          <tbody>
+            <tr><td>H13</td><td>The order by the test car alone and the order by everyone disagree, over all twelve (Kendall τ below 0.5, interval excluding 1)</td><td>not supported</td><td class="n">τ 0.69 [0.48, 0.74]</td></tr>
+            <tr><td>H14</td><td>LLM-written scenarios separate the planners more often than recorded ones</td><td>supported</td><td class="n">36/40 vs 27/40, Fisher p 0.027</td></tr>
+            <tr><td>H15</td><td>A head start given on demand costs the cars less than a fixed one, without losing people's saving in calibrated scenarios</td><td>supported</td><td class="n">−3.96 vehicle·s [−5.35, −2.71]</td></tr>
+            <tr><td>H16</td><td>Holding the turn while a person is near lowers the close passes of the cars behind</td><td>not supported</td><td class="n">−0.03 [−0.09, 0.02] per run</td></tr>
+            <tr><td>H17</td><td>At 2.5 m/s the CARLA agents let pedestrians go first more often</td><td>supported</td><td class="n">1.7% → 8.0%, +0.063 [0.002, 0.123]</td></tr>
+            <tr><td>H18</td><td>At 2.5 m/s the CARLA agent needs the emergency brake less often under the head start</td><td>not supported (more often)</td><td class="n">11.7% → 38.3%, +0.27 [0.17, 0.37]</td></tr>
+            <tr><td>H19</td><td>With every planner at one speed, the two orders still disagree</td><td>supported</td><td class="n">τ 0.19 [0.08, 0.74]</td></tr>
+            <tr><td>H20</td><td>The brief carries the intent: briefed hit rate above the unbriefed chance rate</td><td>supported</td><td class="n">0.74 vs 0.51, +0.23 [0.08, 0.38]</td></tr>
+            <tr><td>H21</td><td>The language model beats random draws in the same ranges</td><td>supported</td><td class="n">0.74 vs 0.13, +0.61 [0.47, 0.75]</td></tr>
+            <tr><td>H22</td><td>The junction's timing helps the model hit the brief</td><td>supported</td><td class="n">0.74 vs 0.31, +0.43 [0.23, 0.60]</td></tr>
+            <tr><td>H23</td><td>Briefed scenarios expose more close calls by the test car than unbriefed or random ones</td><td>not supported</td><td class="n">2.08 vs 2.60 and 1.33 planners per scenario</td></tr>
+          </tbody>
+        </table></div>
+        <p class="small">In the calibrated scenarios someone was always waiting, so the on-demand and fixed head starts were the same
+          signal there; the saving comes from the LLM-written (call placed in 38% of cycles) and recorded scenarios (73%).</p>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Planner</th><th class="n">Runs</th><th class="n">Contacts</th><th class="n">Near-misses (PET &lt; 0.5 s)</th>
+            <th class="n">Lead blocks the crosswalk</th><th class="n">Lead not clear by end of green</th><th class="n">Emergency brake</th><th class="n">Standstills</th></tr></thead>
+          <tbody>
+            <tr><td>Reactive</td><td class="n">960</td><td class="n">45</td><td class="n">79</td><td class="n">43</td><td class="n">6</td><td class="n">0</td><td class="n">0</td></tr>
+            <tr><td>Gap acceptance</td><td class="n">240</td><td class="n">8</td><td class="n">3</td><td class="n">1</td><td class="n">16</td><td class="n">0</td><td class="n">0</td></tr>
+            <tr><td>Courteous</td><td class="n">960</td><td class="n">24</td><td class="n">38</td><td class="n">11</td><td class="n">126</td><td class="n">0</td><td class="n">0</td></tr>
+            <tr><td>MPC</td><td class="n">120</td><td class="n">4</td><td class="n">2</td><td class="n">1</td><td class="n">11</td><td class="n">0</td><td class="n">0</td></tr>
+            <tr><td>PDM-Closed (port)</td><td class="n">240</td><td class="n">8</td><td class="n">13</td><td class="n">11</td><td class="n">9</td><td class="n">0</td><td class="n">1</td></tr>
+            <tr><td>Creep and negotiate</td><td class="n">240</td><td class="n">9</td><td class="n">26</td><td class="n">3</td><td class="n">16</td><td class="n">0</td><td class="n">0</td></tr>
+            <tr><td>Apollo crosswalk (port)</td><td class="n">240</td><td class="n">6</td><td class="n">0</td><td class="n">0</td><td class="n">66</td><td class="n">0</td><td class="n">0</td></tr>
+            <tr><td>Autoware crosswalk (port)</td><td class="n">600</td><td class="n">15</td><td class="n">3</td><td class="n">4</td><td class="n">67</td><td class="n">0</td><td class="n">0</td></tr>
+            <tr><td>CARLA Basic</td><td class="n">120</td><td class="n">0</td><td class="n">1</td><td class="n">0</td><td class="n">0</td><td class="n">2</td><td class="n">0</td></tr>
+            <tr><td>CARLA Behavior, cautious</td><td class="n">120</td><td class="n">1</td><td class="n">1</td><td class="n">1</td><td class="n">0</td><td class="n">1</td><td class="n">0</td></tr>
+            <tr><td>CARLA Behavior, normal</td><td class="n">600</td><td class="n">10</td><td class="n">14</td><td class="n">10</td><td class="n">0</td><td class="n">28</td><td class="n">3</td></tr>
+            <tr><td>CARLA Behavior, aggressive</td><td class="n">120</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="n">0</td></tr>
+            <tr><td>CARLA Basic / cautious / aggressive at 2.5 m/s</td><td class="n">120 each</td><td class="n">0</td><td class="n">13</td><td class="n">11</td><td class="n">0</td><td class="n">14</td><td class="n">0</td></tr>
+            <tr><td>CARLA Behavior, normal, at 2.5 m/s</td><td class="n">240</td><td class="n">3</td><td class="n">43</td><td class="n">36</td><td class="n">0</td><td class="n">60</td><td class="n">0</td></tr>
+          </tbody>
+        </table></div>
+        <p class="small">Counts over every run of each planner (all signal programs, car-following models and scenario sets it ran
+          under). All contacts happened below 1.3 m/s, most of them by a car behind the test car reaching a person who had stopped
+          beside its path; with CARLA's smaller car the leaderboard grid had 6 in 1,200 runs, with the recorded size 38 in 1,440.
+          The emergency brake exists only for the CARLA agents.</p>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Planner</th><th class="n">People, head start</th><th class="n">People, on demand</th><th class="n">People, turn hold</th>
+            <th class="n">Cars, head start</th><th class="n">Cars, on demand</th><th class="n">Cars, turn hold</th></tr></thead>
+          <tbody>
+            <tr><td>Reactive</td><td class="n">−4.7*</td><td class="n">−3.6*</td><td class="n">−0.8</td><td class="n">+7.4*</td><td class="n">+4.4*</td><td class="n">+5.5*</td></tr>
+            <tr><td>Courteous</td><td class="n">−1.0</td><td class="n">+0.3</td><td class="n">−0.2</td><td class="n">+0.2</td><td class="n">−5.8*</td><td class="n">+0.1</td></tr>
+            <tr><td>Autoware (port)</td><td class="n">−1.0</td><td class="n">+0.3</td><td class="n">−0.6</td><td class="n">−0.3</td><td class="n">−5.2*</td><td class="n">+0.1</td></tr>
+            <tr><td>CARLA Behavior, normal</td><td class="n">+4.1*</td><td class="n">+1.3*</td><td class="n">−0.4</td><td class="n">+5.3*</td><td class="n">+3.4*</td><td class="n">+3.8*</td></tr>
+          </tbody>
+        </table></div>
+        <p class="small">Change in people's waiting (person·s) and cars' waiting (vehicle·s) against a shared green, paired within
+          scenario over all 120. * the 95% interval excludes zero. The per-planner breakdown is exploratory, as is the comparison with
+          human drivers.</p>
+      </div>
+    </details>
+
+    <details class="block">
+      <summary><span class="bt">Registered hypotheses H5–H8</span><span class="bs">Every pre-registered contrast in both grids, with verdicts</span></summary>
+      <div class="block-body">
+        <p class="small">The primary grid (Q01) starts the queue at the stop line. In the earlier registered grid (R01) the queue started 8 m
+          upstream and the lead car arrived after the 5 s head start had ended, so its LPI contrasts are exactly zero. Contrasts are means of
+          within-scenario differences with paired bootstrap 95% intervals.</p>
+        <div class="table-wrap"><table id="hyp-table">
+          <thead><tr><th>Id</th><th>Contrast</th><th>Pred.</th><th class="n">Q01 pooled</th><th class="n">Calibrated</th><th class="n">LLM</th><th class="n">R01 pooled</th><th>Verdict (Q01)</th></tr></thead>
+          <tbody><tr><td colspan="8" class="muted">Loading…</td></tr></tbody>
+        </table></div>
+        <figure>
+          <div class="frame"><img src="assets/img/supp_sensitivity.png" alt="Forest plot of every registered contrast in both grids, by scenario source." loading="lazy"></div>
+          <figcaption><b>Figure S4.</b> Every registered contrast in the stop-line grid (pooled, calibrated, LLM) and the upstream grid.
+            <a class="fig-dl" href="assets/img/supp_sensitivity.pdf">PDF</a> <a class="fig-dl" href="assets/img/supp_sensitivity.svg">SVG</a></figcaption>
+        </figure>
+        <p class="small" id="checks-line"></p>
+      </div>
+    </details>
+
+    <details class="block">
+      <summary><span class="bt">Condition explorer</span><span class="bs">Cell means for any measure, source, follower law and grid</span></summary>
+      <div class="block-body">
+        <div class="controls">
+          <label>Measure <select id="ex-metric"></select></label>
+          <label>Scenario source <select id="ex-source"><option value="pooled">pooled (80)</option><option value="S0">calibrated (40)</option><option value="S1">LLM-written (40)</option></select></label>
+          <label>Follower law <select id="ex-follower"><option value="idm">IDM</option><option value="gipps">Gipps</option></select></label>
+          <label>Grid <select id="ex-grid"><option value="Q01">Q01 stop line (primary)</option><option value="R01">R01 upstream</option></select></label>
+        </div>
+        <div class="chart" id="ex-chart" aria-live="polite"></div>
+        <div class="legend-inline"><span style="--c:var(--ink)">shared green</span><span class="hollow" style="--c:var(--ink)">5 s head start</span></div>
+        <figure>
+          <div class="frame"><img src="assets/img/supp_distributions.png" alt="Distributions of people's and cars' waiting per episode by lead planner and signal, by source." loading="lazy"></div>
+          <figcaption><b>Figure S2.</b> Per-episode distributions behind the means, with a long right tail in people's waiting under the reactive
+            lead in the calibrated scenarios. <a class="fig-dl" href="assets/img/supp_distributions.pdf">PDF</a></figcaption>
+        </figure>
+      </div>
+    </details>
+
+    <details class="block">
+      <summary><span class="bt">Close passes by vehicle, phase and sight line</span><span class="bs">Per-vehicle rates and their 95% intervals</span></summary>
+      <div class="block-body">
+        <figure>
+          <div class="frame"><img src="assets/img/supp_sources_of_risk.png" alt="Close passes per vehicle by role and planner; per passage by phase; motorcycle close share when the person is visible or hidden." loading="lazy"></div>
+          <figcaption><b>Figure S3 (post hoc).</b> (a) Close passes per vehicle, lead car against each follower. (b) Per passage, by the people's
+            phase when the car passes: a follower passing during the flashing phase has twice the rate of one passing during walk. (c) Motorcycle
+            encounters that follow a moment when a car body hid the person are close passes more often (0.36 against 0.20).
+            <a class="fig-dl" href="assets/img/supp_sources_of_risk.pdf">PDF</a></figcaption>
+        </figure>
+        <div class="table-wrap"><table id="pv-table">
+          <thead><tr><th>Role</th><th>Planner</th><th>Signal</th><th class="n">Close passes per vehicle [95% CI]</th><th class="n">Completed the turn</th></tr></thead>
+          <tbody></tbody>
+        </table></div>
+      </div>
+    </details>
+
+    <details class="block">
+      <summary><span class="bt">The 80 scenarios</span><span class="bs">Briefs, crossers and per-planner outcomes</span></summary>
+      <div class="block-body">
+        <div class="table-wrap"><table id="brief-table">
+          <thead><tr><th>Brief</th><th>Name</th><th>Text given to the generator</th></tr></thead><tbody></tbody></table></div>
+        <div class="controls">
+          <label>Source <select id="sc-source"><option value="">all</option><option value="S0">calibrated</option><option value="S1">LLM-written</option></select></label>
+          <label>Brief <select id="sc-brief"><option value="">all</option></select></label>
+          <label>Sort by <select id="sc-sort"><option value="id">scenario id</option><option value="dp">courtesy effect on people</option><option value="dv">courtesy cost to cars</option></select></label>
+        </div>
+        <div class="table-wrap" id="sc-list"></div>
+      </div>
+    </details>
+
+    <details class="block" id="d-generator">
+      <summary><span class="bt">Generator study and the follow-up</span><span class="bs">Registered hypotheses H1–H3 and H9–H12, with results</span></summary>
+      <div class="block-body">
+        <p class="small">The generator study (476 episodes) compared LLM, calibrated and uniformly sampled scenarios.</p>
+        <div class="table-wrap"><table id="v5-table"><thead><tr><th>Id</th><th>Hypothesis</th><th>Verdict</th><th>Detail</th></tr></thead><tbody></tbody></table></div>
+        <figure>
+          <div class="frame"><img src="assets/img/fig_generator.png" alt="Paper Figure 2: generator diagnostic." loading="lazy"></div>
+          <figcaption><b>Paper Figure 2.</b> Where generated scenarios land: the lead car often meets nobody, and the followers meet the people.</figcaption>
+        </figure>
+        <p class="small">Follow-up (amendment T). Two causes were possible: the prompt's timing was stale (it put the lead car at the zebra
+          23–26 s after the start; it arrives at 14.3 s), and clock-timed releases cannot follow a planner that yields. Arms: C0 existing
+          clock-timed scenarios; C1 clock-timed with the timing sentence corrected; T1 state triggers allowed. Same model, briefs and checker,
+          IDM followers. Registered: H9 T1 has fewer scenarios where the lead car meets nobody (one-sided Fisher); H10 more scenarios that
+          separate the planners (Fisher); H11 a higher lead share of close passes (bootstrap); H12 C1 against C0 (two-sided estimates).
+          Designed after the primary results and registered before its 480 runs; C0 reuses the primary grid's runs.</p>
+        <div id="t-status" class="callout warn"><h4>Status</h4><p>Loading…</p></div>
+        <p class="small"><b>Exploratory checks, written after the results.</b> The model used a trigger in 21 of 40 T1 scenarios and for
+          73 of 216 crossers; 39 triggers named the lead car, 23 the second car and 11 the third. The share of crossers who stepped onto
+          the crosswalk before the lead car had cleared it was 0.41 (C0), 0.53 (C1) and 0.54 (T1), against 0.80 in the calibrated
+          scenarios. Misses by brief (of 5 scenarios each, C0 / C1 / T1): late group 4 / 4 / 3, hidden walker 0 / 2 / 4, open brief
+          4 / 1 / 0, counterflow 1 / 0 / 1, two riders 0 / 1 / 0, others 0. The regenerated scenarios also produced 8 standstills
+          (C1 under the head start; one with the lead car, seven with a follower) and 4 runs in which a follower crept into a standing
+          person at under 0.9 m/s; the earlier grid had neither.</p>
+      </div>
+    </details>
+
+    <details class="block">
+      <summary><span class="bt">Real-traffic reference and datasets</span><span class="bs">SinD comparison; what each dataset contributes</span></summary>
+      <div class="block-body">
+        <figure>
+          <div class="frame"><img src="assets/img/fig_reallog.png" alt="Real-traffic reference: who goes first by time since green, and post-encroachment time distribution." loading="lazy"></div>
+          <figcaption><b>SinD reference.</b> At a junction where pedestrians share the turning green, who goes first by time since the green, and
+            post-encroachment times. Left-turning drivers stopped for walkers in 1 of 89 encounters on the exit crosswalk.</figcaption>
+        </figure>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Dataset</th><th>Role here</th><th>What we use from its logs</th></tr></thead>
+          <tbody>
+            <tr><td>inD</td><td>Calibrates crossers' gap acceptance</td><td>1,834 pedestrian–vehicle crossing encounters: accepted gaps, post-encroachment times, vehicle speed (median 19 km/h)</td></tr>
+            <tr><td>uniD</td><td>Speed and stop priors; reference for an unsignalised zebra</td><td>7,852 pedestrians, 711 bicycles, 1,248 cars on a campus road with zebras</td></tr>
+            <tr><td>SinD</td><td>Outside reference (signalised)</td><td>Tracks with signal states: who goes first, post-encroachment time, standing time, time since green</td></tr>
+            <tr><td>highD, rounD</td><td>Priors</td><td>Headways; urban speeds and stops</td></tr>
+          </tbody></table></div>
+      </div>
+    </details>
+
+    <details class="block" id="d-data">
+      <summary><span class="bt">Data downloads and episode browser</span><span class="bs">The 5,160 twelve-planner runs, eight first-stage CSV files and the first-stage episode browser</span></summary>
+      <div class="block-body">
+        <div class="downloads">
+          <div><a href="data/episodes_v9.csv" download>episodes_v9.csv</a><p>All 5,160 twelve-planner runs (recorded car size), every measure and failure flag.</p></div>
+          <div><a href="data/summary_v9.json" download>summary_v9.json</a><p>The registered analysis of those runs: leaderboards, H13–H23, ablation, signals, human comparison.</p></div>
+          <div><a href="data/episodes_Q01.csv" download>episodes_Q01.csv</a><p>960 primary episodes, every measure.</p></div>
+          <div><a href="data/episodes_R01.csv" download>episodes_R01.csv</a><p>960 upstream-queue episodes.</p></div>
+          <div><a href="data/micro_encounters_Q01.csv" download>micro_encounters_Q01.csv</a><p>Every vehicle–person encounter: role, who went first, post-encroachment time, phase.</p></div>
+          <div><a href="data/micro_people_Q01.csv" download>micro_people_Q01.csv</a><p>Every crosser: held, slowed, signal wait, crossing time.</p></div>
+          <div><a href="data/micro_cars_Q01.csv" download>micro_cars_Q01.csv</a><p>Every vehicle: standing time and turn completion.</p></div>
+          <div><a href="data/per_vehicle_close_Q01.csv" download>per_vehicle_close_Q01.csv</a><p>Per vehicle: passed, passage phase, close pass (post hoc).</p></div>
+          <div><a href="data/moto_sightlines_Q01.csv" download>moto_sightlines_Q01.csv</a><p>Motorcycle encounters with sight-line state (post hoc).</p></div>
+          <div><a href="data/kerb_onset_Q01.csv" download>kerb_onset_Q01.csv</a><p>Walkers at the kerb at the walk onset, by scenario (post hoc).</p></div>
+        </div>
+        <div class="controls">
+          <label>Search scenario <input id="ep-q" type="search" placeholder="e.g. S1_B3"></label>
+          <label>Planner <select id="ep-planner"><option value="">all</option><option>P1</option><option>P2</option><option>P3</option></select></label>
+          <label>Follower <select id="ep-follower"><option value="">all</option><option>idm</option><option>gipps</option></select></label>
+          <label>Signal <select id="ep-signal"><option value="">all</option><option>concurrent</option><option>lpi</option></select></label>
+        </div>
+        <div class="table-wrap"><table id="ep-table"><thead></thead><tbody></tbody></table></div>
+        <div class="pager" id="ep-pager"></div>
+      </div>
+    </details>
+
+    <details class="block">
+      <summary><span class="bt">Protocol, registration and deviations</span><span class="bs">Frozen documents with hashes, gates, deviation log, statistics</span></summary>
+      <div class="block-body">
+        <p class="small">Each grid was registered and frozen (file hashes) before its runs, and every factor gate compares a run with its twin.</p>
+        <div class="table-wrap"><table id="doc-table"><thead><tr><th>Document</th><th>SHA-256 of the original</th></tr></thead><tbody></tbody></table></div>
+        <div class="table-wrap"><table id="freeze-table"><thead><tr><th>Freeze</th><th class="n">Files hashed</th><th class="n">Episodes</th><th>Frozen at (UTC)</th><th>SHA-256</th></tr></thead><tbody></tbody></table></div>
+        <div class="table-wrap"><table id="gate-table"><thead><tr><th>Gate set</th><th>Results</th></tr></thead><tbody></tbody></table></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Deviation</th><th>Handling</th></tr></thead>
+          <tbody>
+            <tr><td>In R01 the queue started 8.2 m upstream; the 5 s head start had ended before the lead car arrived, so all 480 LPI runs equal their concurrent twins.</td><td>Amendment Q (queue at the stop line) was registered after that result and before its runs; R01 is reported as a sensitivity grid.</td></tr>
+            <tr><td>The stopped-car pass rule took four gate iterations before the benchmark freeze.</td><td>All iterations are in the benchmark registration.</td></tr>
+            <tr><td>Amendment T gate T-b's “follows the planner” criterion was mis-specified: a lead-car trigger at 10 m fires before the planners diverge.</td><td>The failure is recorded; the criterion moved to the third car's trigger and passed, before the grid, with no code change.</td></tr>
+            <tr><td>H6c (head-start cost to cars) is null pooled, with opposite signs in the two sources.</td><td>Reported as not supported, with both source estimates.</td></tr>
+            <tr><td>Generator study: H1 and H2 unsupported; 11 runs deadlocked under the inherited stop and crosser rules; the collision sensor missed body touches.</td><td>Reported; the benchmark adds the stopped-car pass rule and measures contact from body polygons.</td></tr>
+            <tr><td>Per-vehicle, per-phase, motorcycle sight-line and kerb-onset analyses were added after the reviews.</td><td>Labelled post hoc throughout.</td></tr>
+          </tbody></table></div>
+        <p class="small">Statistics: paired bootstrap over scenarios, 4,000 resamples with a fixed seed for the registered contrasts, 2,000 (seed 9)
+          for the micro breakdowns and 4,000 (seed 21) for H11. Registered contrasts are uncorrected for multiplicity; exploratory and post hoc
+          results carry no confirmatory weight. Close passes use a post-encroachment time below 1.5 s.</p>
+      </div>
+    </details>
+
+    <footer class="site-foot">Supplementary material for an AAAI-27 workshop paper.</footer>
+  </section>
+</main>
+</div>
+<script src="assets/js/site.js" defer></script>
+</body>
+</html>

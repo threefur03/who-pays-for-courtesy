@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Exploratory analysis plan (micro and macro) · Who Pays for Courtesy?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400&display=swap">
+<link rel="stylesheet" href="../assets/css/site.css">
+</head>
+<body class="doc">
+<header class="doc-bar">
+  <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true"></span>Who pays for courtesy?</a>
+  <a href="../index.html#report">← all documents</a>
+</header>
+<main class="doc-main">
+  <p class="doc-note">Frozen document, rendered as registered. SHA-256 of the original file: <code>aaca21944577a0c86ed397c6d474a65cf1837db02128773a160a4f0528ea6ae6</code>.
+  Lines that name local paths or unrelated internal folders were removed (0 removed) and local time-zone or place labels redacted, for anonymous review;
+  file paths in the text refer to the code release.</p>
+  <article class="prose">
+<h1>Exploratory microscopic and macroscopic analysis (v6, not registered)</h1>
+<p>Written on 9 November 2026 while the grid was running (522 of 960 episodes done) and before any grid outcome was read. The script was tested only on the gate runs in <code>runs/gates/G6</code>.</p>
+<p>The registered analysis is unchanged: <code>analysis/aggregate_v6.py</code>, H5–H8 in <code>DESIGN_H.md</code> section 5, frozen in <code>integrity/REGISTRATION_FREEZE_H.json</code>.</p>
+<p>Everything here is labelled <strong>exploratory</strong> in the paper. It is descriptive and no prediction is attached to it.</p>
+<h2>Why</h2>
+<p>The paper is framed as a benchmark of current driving and signal paradigms. It reports how cars and people share the zebra at two levels:</p>
+<ul>
+<li><strong>Microscopic:</strong> single encounters and single people. Who entered the conflict band first, how close the two passed, and which kinds of crosser bear the cost.</li>
+<li><strong>Macroscopic:</strong> scenario totals. The registered who-pays measures (person·s held or slowed, vehicle·s standing), plus who gets through within the green.</li>
+</ul>
+<p>The registered contrasts already cover the scenario-level totals. This file adds the breakdowns that explain them.</p>
+<h2>Definitions (fixed before the grid finished)</h2>
+<p><strong>Inputs.</strong> The script reads only the per-run files the batch runner writes: <code>CONFIG.json</code>, <code>MEASURES.json</code>, <code>PROGRESS.json</code> and <code>COMPLETION.json</code>. It uses the measure code's own encounter list:</p>
+<ul>
+<li>an encounter is a person–vehicle pair whose occupancy of the shared stretch of zebra comes within 5 s;</li>
+<li>PET is the second entry minus the first exit;</li>
+<li>a close pass is PET &lt; 1.5 s.</li>
+</ul>
+<p><strong>Microscopic measures</strong></p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Measure</th>
+<th>Breakdown</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M1</td>
+<td>Share of car encounters (car_0–car_2) in which the person entered first</td>
+<td>by time since the car's green began (&lt; 10, 10–20, ≥ 20 s, the SinD reference bins, and 5 s bins for the figure), by signal program and lead paradigm</td>
+</tr>
+<tr>
+<td>M2</td>
+<td>Close-pass share and PET quartiles</td>
+<td>by vehicle role (lead car, follower cars, motorcycle) and signal program; lead-car close passes by paradigm</td>
+</tr>
+<tr>
+<td>M3</td>
+<td>Per-person held + slowed by vehicles (s), for crossers who entered the zebra</td>
+<td>by crosser kind (walker, runner, e-bike), lead paradigm and signal program</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Macroscopic measures</strong></p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Measure</th>
+<th>Breakdown</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A1</td>
+<td>Who gets through: cars completing the full turn within the green (of 3), and the share of crossers who cleared the zebra within the green</td>
+<td>by lead paradigm and signal program</td>
+</tr>
+<tr>
+<td>A2</td>
+<td>Scenarios that discriminate the paradigms: (i) the lead car met a crosser in at least one condition; (ii) the three paradigms' person held + slowed, each averaged over follower law and signal, span more than 1 person·s</td>
+<td>by scenario source (S0 calibrated, S1 LLM)</td>
+</tr>
+<tr>
+<td>A3</td>
+<td>Spearman correlation of scenario person held + slowed, and of car standing, with the green G and the flashing time F (the exploratory G/F relation named in <code>DESIGN_H.md</code> section 5)</td>
+<td>by signal program</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Intervals.</strong> 95% percentile bootstrap that resamples scenarios (2000 resamples, seed 9). An encounter or person-level share is pooled within the resampled scenarios. These intervals are descriptive.</p>
+<p><strong>Real-log reference.</strong> The paper compares M1 and the PET distribution with the SinD left-turn encounters (<code>experiments/real_log_context</code>). The SinD junction runs the concurrent program, so only the concurrent arm is set beside it. Geometry and queue timing differ, so the comparison is a reference, not a validation.</p>
+<h2>Command</h2>
+<pre><code>python -I -B posthoc/micro_macro_v6.py runs/grid/R01 checkpoints/R01/posthoc
+</code></pre>
+<p>Outputs go to <code>checkpoints/R01/posthoc/</code>: <code>micro_encounters.csv</code>, <code>micro_people.csv</code>, <code>micro_cars.csv</code>, <code>macro_scenarios.csv</code> and <code>MICRO_MACRO.json</code>. <code>paper_aaai27/tools/after_grid.sh</code> runs this after the registered analysis.</p>
+  </article>
+</main>
+</body>
+</html>

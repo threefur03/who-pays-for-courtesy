@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Results: upstream grid (sensitivity) · Who Pays for Courtesy?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400&display=swap">
+<link rel="stylesheet" href="../assets/css/site.css">
+</head>
+<body class="doc">
+<header class="doc-bar">
+  <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true"></span>Who pays for courtesy?</a>
+  <a href="../index.html#report">← all documents</a>
+</header>
+<main class="doc-main">
+  <p class="doc-note">Frozen document, rendered as registered. SHA-256 of the original file: <code>a77a50af2f545f7b88c591ade40211b35764574a3e02089889a1906f8cb87ada</code>.
+  Lines that name local paths or unrelated internal folders were removed (1 removed) and local time-zone or place labels redacted, for anonymous review;
+  file paths in the text refer to the code release.</p>
+  <article class="prose">
+<h1>Results H: v6 grid R01 (960 episodes, finished 9 November 2026, 22:00)</h1>
+<p><strong>Sources:</strong></p>
+<ul>
+<li>registered: <code>checkpoints/R01/summary.json</code> (<code>analysis/aggregate_v6.py</code>);</li>
+<li>exploratory: <code>checkpoints/R01/posthoc/MICRO_MACRO.json</code> (<code>posthoc/micro_macro_v6.py</code>, definitions in <code>POSTHOC_MICRO_MACRO.md</code>).</li>
+</ul>
+<p><strong>Units and conventions:</strong></p>
+<ul>
+<li>people = person held + slowed by vehicles (person·s per episode);</li>
+<li>cars = vehicle standing before the full turn (vehicle·s per episode);</li>
+<li>intervals are paired bootstrap 95% over scenarios.</li>
+</ul>
+<p><strong>Read section 1 first:</strong> the signal factor did nothing in this grid.</p>
+<h2>1. The LPI never bound (all H6 and H7 contrasts are exactly 0)</h2>
+<p><strong>What happened.</strong> All 960 episodes completed. In all 480 concurrent/LPI pairs, the LPI run's <code>MEASURES.json</code> and <code>PROGRESS.json</code> equal its concurrent twin's, apart from the run name. The lead car's trajectory is identical too.</p>
+<p><strong>Why.</strong> The cause is the start of the queue, not the LPI code:</p>
+<ul>
+<li>the lead car's front starts 8.2 m behind the junction entry;</li>
+<li>the copied stock-pedal tracker raises the Micra's throttle at only 0.08/s below 0.15 m/s, so the car crawls for about 4 s before accelerating;</li>
+<li>it first enters the junction 8.95 s after the green begins;</li>
+<li>the pre-entry red cap stays above its speed throughout the 5 s LPI.</li>
+</ul>
+<p>So both programs gave walkers about 9 s before the turn could reach them.</p>
+<p><strong>Why the gate missed it.</strong> Gate G6d checked one LPI run and "no car enters before 5 s". That passed trivially, because no concurrent twin was compared.</p>
+<p><strong>What follows.</strong></p>
+<ul>
+<li>H6a, H6b, H6c and H7 are <strong>not identifiable from R01</strong>. They are not supported, and they are not refuted either.</li>
+<li><strong>Amendment Q</strong> (<code>DESIGN_Q.md</code>) reruns the grid with the queue at the stop line, which is where an LPI acts.</li>
+<li><strong>As a benchmark finding:</strong> with an upstream queue and this launch, a 5 s LPI changes nothing for anyone in any of the 480 pairs.</li>
+<li><strong>Measure artefact.</strong> M1 bins encounters by time since the <em>car's</em> green. Under LPI, that clock starts 5 s later, so identical encounters move one 5 s bin earlier. The R01 LPI curve in Figure 4a is therefore a relabelled concurrent curve and must not be read as an effect.</li>
+</ul>
+<h2>2. Registered contrasts (pooled n = 80; S0 calibrated, S1 LLM, 40 each)</h2>
+<table>
+<thead>
+<tr>
+<th>Contrast</th>
+<th>Pooled [95% CI]</th>
+<th>S1 LLM</th>
+<th>S0 calibrated</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>H5a people, courteous − reactive</td>
+<td>−2.43 [−4.03, −1.02]</td>
+<td>−2.21 [−3.83, −0.83]</td>
+<td>−2.65 [−5.56, −0.26]</td>
+<td>supported</td>
+</tr>
+<tr>
+<td>H5b cars, courteous − reactive</td>
+<td>+13.5 [8.6, 18.8]</td>
+<td>+10.9 [4.7, 17.8]</td>
+<td>+16.2 [8.9, 24.3]</td>
+<td>supported</td>
+</tr>
+<tr>
+<td>H6a person-first share, LPI − conc.</td>
+<td>0 [0, 0]</td>
+<td>0</td>
+<td>0</td>
+<td>not identifiable (section 1)</td>
+</tr>
+<tr>
+<td>H6b lead close passes, LPI − conc.</td>
+<td>0 [0, 0]</td>
+<td>0</td>
+<td>0</td>
+<td>not identifiable</td>
+</tr>
+<tr>
+<td>H6c cars, LPI − conc.</td>
+<td>0 [0, 0]</td>
+<td>0</td>
+<td>0</td>
+<td>not identifiable</td>
+</tr>
+<tr>
+<td>H7 (P1 − P3)_LPI − (P1 − P3)_conc.</td>
+<td>0 [0, 0]</td>
+<td>0</td>
+<td>0</td>
+<td>not identifiable</td>
+</tr>
+<tr>
+<td>H8 people, Gipps − IDM</td>
+<td>−0.05 [−0.93, 0.85]</td>
+<td>+0.31 [−1.28, 2.02]</td>
+<td>−0.41 [−1.18, 0.28]</td>
+<td>no effect detected</td>
+</tr>
+<tr>
+<td>H8 follower close passes, Gipps − IDM</td>
+<td>+0.03 [−0.05, 0.10]</td>
+<td>+0.06 [−0.05, 0.18]</td>
+<td>−0.01 [−0.09, 0.07]</td>
+<td>no effect detected</td>
+</tr>
+<tr>
+<td>H8 cars, Gipps − IDM</td>
+<td>+0.16 [−0.39, 0.74]</td>
+<td>+0.56 [0.08, 1.06]</td>
+<td>−0.23 [−1.21, 0.72]</td>
+<td>no pooled effect; S1 small</td>
+</tr>
+</tbody>
+</table>
+<p><strong>H5 holds in every follower × signal cell:</strong> people −2.3 to −2.6 person·s, cars +13.1 to +14.0 vehicle·s, all intervals excluding 0.</p>
+<ul>
+<li><strong>Exchange rate.</strong> Courtesy buys about 1 person·s of crosser time for about 5.6 vehicle·s of standing.</li>
+<li><strong>The gradient is monotone in the planner's margin</strong>, with gap acceptance in between:</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Planner</th>
+<th>People (person·s)</th>
+<th>Cars (vehicle·s)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>reactive</td>
+<td>7.4–7.6</td>
+<td>36.9–37.6</td>
+</tr>
+<tr>
+<td>gap acceptance</td>
+<td>5.5–6.0</td>
+<td>45.2</td>
+</tr>
+<tr>
+<td>courteous</td>
+<td>5.1</td>
+<td>50.7–50.9</td>
+</tr>
+</tbody>
+</table>
+<p><strong>H8 (car-following law).</strong> The law of the queued cars barely matters for anyone once the lead paradigm is fixed. The one interval that excludes 0 (S1 cars, +0.56 vehicle·s) is small and is one of many estimates.</p>
+<p><strong>Check C:</strong></p>
+<ul>
+<li><strong>Standstills:</strong> no run ends in a mutual standstill (0 of 960; v5 had 11 of 476).</li>
+<li><strong>Contacts:</strong> polygon contacts in 12 runs, which are 6 situations, each identical in both programs:<ul>
+<li>10 begin from the car side with the pass rule inactive (S0_202 P1 × 4, the v5 walking-pace touch; S1_B5_04 runner × 6);</li>
+<li><strong>2 begin under the pass rule:</strong> S1_B4_05 P2 IDM, a runner at 1.09 m/s into stationary follower 2 at 43.7 s. That breaks the rule's design intent (G6b allowed none) and is reported as a limitation.</li>
+</ul>
+</li>
+<li><strong>Pass rule:</strong> used in 116 runs.</li>
+<li><strong>Collision sensor:</strong> 0 sensor contacts, as expected.</li>
+</ul>
+<h2>3. Exploratory, macroscopic</h2>
+<p><strong>A1, who gets through within the green</strong> (signal programs identical):</p>
+<table>
+<thead>
+<tr>
+<th>Lead</th>
+<th>Cars through (of 3)</th>
+<th>Crossers through</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>reactive</td>
+<td>1.46 [1.28, 1.64]</td>
+<td>0.63 [0.58, 0.68]</td>
+</tr>
+<tr>
+<td>gap acceptance</td>
+<td>1.21 [1.01, 1.40]</td>
+<td>0.64 [0.59, 0.69]</td>
+</tr>
+<tr>
+<td>courteous</td>
+<td>1.11 [0.91, 1.31]</td>
+<td>0.65 [0.60, 0.70]</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Courtesy costs about 0.35 cars per green.</li>
+<li>The crossers' through-share moves by only 0.02. The cause has not been analysed; a plausible reading is that most crossers who miss the green do so because of their own arrival and speed.</li>
+<li>Fewer than half the queued cars complete the turn within the green under every planner.</li>
+</ul>
+<p><strong>A2, which scenarios discriminate the planners:</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Lead meets a crosser</th>
+<th>Planner span &gt; 1 person·s</th>
+<th>Median span</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>calibrated (S0)</td>
+<td>32 of 40</td>
+<td>26 of 40</td>
+<td>3.22 person·s</td>
+</tr>
+<tr>
+<td>LLM (S1)</td>
+<td>28 of 40</td>
+<td>17 of 40</td>
+<td>0.25 person·s</td>
+</tr>
+</tbody>
+</table>
+<p>This is a further negative result for the generator as a planner benchmark: the briefs produce the requested events (v5 H3), but fewer LLM scenarios separate the planners. The reason has not been analysed.</p>
+<p><strong>A3, signal timing (Spearman, n = 80, pooled):</strong></p>
+<ul>
+<li>people vs G: ρ = 0.27;</li>
+<li>people vs F: −0.01;</li>
+<li>cars vs G: 0.05;</li>
+<li>cars vs F: −0.36.</li>
+</ul>
+<p>Caveat: S0 has fixed G = 45 s and F = 8 s, so these are mostly the S1 spread.</p>
+<h2>4. Exploratory, microscopic</h2>
+<p><strong>M1, who goes first.</strong></p>
+<ul>
+<li>No simulated car encounter falls in the first 15 s of green: the queue enters the junction about 9 s after the green begins and must then cover the 19 m to the zebra.</li>
+<li>In the 15–20 s bin the person went first in 0.22 of encounters; in 20–25 s, 0.66; later, 0.13–0.42.</li>
+<li>Encounter-level person-first share by planner: reactive 0.35, gap acceptance 0.34, courteous 0.33. These are close, because courteous lead cars meet fewer people at all (see M2), not because they let more go first.</li>
+<li>SinD (real, concurrent): 8 of 15 car-first in &lt; 10 s, 21 of 68 later. The simulated queue arrives too late to reproduce SinD's early-green encounters. Amendment Q moves the queue to the line and addresses that.</li>
+</ul>
+<p><strong>M2, close passes (PET &lt; 1.5 s) by vehicle role, pooled:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Encounters</th>
+<th>Close share</th>
+<th>Median PET</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>lead</td>
+<td>1024</td>
+<td>0.32 [0.24, 0.41]</td>
+<td>2.6 s</td>
+</tr>
+<tr>
+<td>followers</td>
+<td>1658</td>
+<td>0.46 [0.37, 0.55]</td>
+<td>2.05 s</td>
+</tr>
+<tr>
+<td>motorcycle</td>
+<td>1794</td>
+<td>0.21 [0.16, 0.26]</td>
+<td>2.2 s</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>The followers produce the closest passes</strong>, even though the planner only controls the lead car.</li>
+<li><strong>Lead close share by planner:</strong> reactive 0.34 (456 encounters), gap acceptance 0.28 (312), courteous 0.32 (256). The courteous planner's benefit is fewer lead encounters, not gentler ones.</li>
+<li><strong>Per episode:</strong> lead 1.07 encounters (0.34 close), followers 1.73 (0.79 close), motorcycle 1.87 (0.40 close).</li>
+</ul>
+<p><strong>M3, held + slowed per person who entered:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Crosser</th>
+<th>Reactive</th>
+<th>Gap acceptance</th>
+<th>Courteous</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>walkers</td>
+<td>1.34 s</td>
+<td>1.00 s</td>
+<td>0.88 s</td>
+</tr>
+<tr>
+<td>runner</td>
+<td>1.42 s</td>
+<td>1.46 s</td>
+<td>1.35 s</td>
+</tr>
+<tr>
+<td>e-bikes</td>
+<td>0.80 s</td>
+<td>0.43 s</td>
+<td>0.34 s</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>The runner pays the most, and courtesy does not reduce its cost. The cause has not been analysed.</li>
+<li>Walkers and e-bike riders gain from courtesy.</li>
+</ul>
+<h2>5. Replay</h2>
+<p>The registered selection rule (S1, P1, IDM, LPI − concurrent change in people) finds <strong>no changed scenario</strong> (<code>REPLAY_SELECTION.json</code>, pick null), because of section 1. The paper keeps the stopped-car-rule replay until the amendment Q01 selection.</p>
+<h2>6. Isolation</h2>
+<ul>
+<li><strong>Servers:</strong> CARLA 2210 and the rule service on 8796 are kept running for amendment Q.</li>
+</ul>
+  </article>
+</main>
+</body>
+</html>

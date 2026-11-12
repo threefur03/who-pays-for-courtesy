@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Registration: amendment Q, queue at the stop line · Who Pays for Courtesy?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400&display=swap">
+<link rel="stylesheet" href="../assets/css/site.css">
+</head>
+<body class="doc">
+<header class="doc-bar">
+  <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true"></span>Who pays for courtesy?</a>
+  <a href="../index.html#report">← all documents</a>
+</header>
+<main class="doc-main">
+  <p class="doc-note">Frozen document, rendered as registered. SHA-256 of the original file: <code>b6cd92e8dce6191faf08e3931042a5fa3694f26912085802e0d5ee1fa0ff44fa</code>.
+  Lines that name local paths or unrelated internal folders were removed (0 removed) and local time-zone or place labels redacted, for anonymous review;
+  file paths in the text refer to the code release.</p>
+  <article class="prose">
+<h1>Amendment Q: the queue starts at the stop line (registered 9 November 2026, after the v6 grid)</h1>
+<p>This is an amendment to <code>DESIGN_H.md</code>, written after the 960-episode v6 grid (<code>runs/grid/R01</code>) had finished and been analysed. The registration <code>integrity/REGISTRATION_FREEZE_H.json</code> and every v6 file stay as they are. Amendment Q has its own code copy (<code>amend_Q/</code>), gates, freeze and runs.</p>
+<h2>1. Why: in the v6 grid the LPI never bound</h2>
+<p>In all 480 concurrent/LPI pairs of the v6 grid, the measures of the LPI run are identical to its concurrent twin. Only the run name differs. H6a–c and H7 are therefore exactly 0 with zero-width intervals. Nothing failed in the LPI code:</p>
+<ul>
+<li>the signal state, the SUMO program and the pre-entry red mask all switch at 5 s;</li>
+<li>the lead car's trajectory is identical in both programs.</li>
+</ul>
+<p><strong>The cause is the start of the queue.</strong></p>
+<ul>
+<li><strong>Distance.</strong> The lead car spawns with its front 8.2 m behind the junction entry (route s = 26.8 m against 35.0 m).</li>
+<li><strong>Launch lag.</strong> It starts from rest under the copied stock-pedal tracker, whose throttle rises at only 0.08 per second below 0.15 m/s. The car therefore crawls for about 4 s before it accelerates.</li>
+<li><strong>Effect.</strong> The lead car first enters the junction 8.95 s after the green begins. The pre-entry red cap (√(0.6·distance)) stays above its speed throughout the 5 s LPI, so the cap never binds.</li>
+<li><strong>Result.</strong> In both programs the walkers already had about 9 s on the zebra before the turn could reach them. The "concurrent" program behaved as a de facto leading interval.</li>
+</ul>
+<p><strong>Why the gate missed it.</strong> Gate G6d checked only that a single LPI run completed and that no car entered the junction before 5 s. That check passed trivially, at 8.95 s. It had no concurrent twin to compare against. This is a gate-design error, and it is reported as such.</p>
+<p><strong>What still stands from the v6 grid.</strong></p>
+<ul>
+<li>The lead-paradigm contrasts (H5) and the follower-law estimates (H8).</li>
+<li>The exploratory breakdowns.</li>
+</ul>
+<p><strong>What the v6 grid shows about the LPI.</strong> A 5 s LPI changes nothing when the turning queue starts this far upstream with this launch. That is reported as a finding of the benchmark, not as a test of H6/H7.</p>
+<h2>2. The one change (marked <code>v6q</code>)</h2>
+<p>In <code>amend_Q/runner_v6q.py</code> (a copy of <code>native/runner_v6.py</code>), <code>--queue-offset-m d</code> moves all three cars d metres forward along their route. d = 0 reproduces <code>runner_v6</code> exactly (gate Q-a).</p>
+<ul>
+<li><strong>Amendment Q uses d = 7.4 m.</strong> The lead car's front is then 0.8 m behind the junction entry when the green begins, and the followers keep their 10 m spacing.</li>
+<li><strong>Why this is the relevant case.</strong> A leading pedestrian interval exists for a turning queue that stands at the stop line when the green starts.</li>
+<li><strong>Unchanged:</strong> the scenarios, planners, follower laws, signal programs, LPI duration (5 s), pass rule, measures, horizon, servers and seeds.</li>
+</ul>
+<h2>3. Gates (criteria fixed before the gate runs; <code>runs/gates/Q</code>)</h2>
+<ul>
+<li><strong>Q-a (reproduction).</strong> With d = 0, two runs give the same <code>MEASURES.json</code> and <code>PROGRESS.json</code> as their v6 grid counterparts, apart from the run name:<ul>
+<li><code>S1_B5_01__P1__idm__lpi</code> (scripted planner);</li>
+<li><code>S1_B1_01__P2__idm__concurrent</code> (rule service).</li>
+</ul>
+</li>
+<li><strong>Q-b (the LPI binds).</strong> With d = 7.4, run S0_201, S1_B5_01 and S1_B1_01 under P1 with IDM, in both programs. For each pair:<ul>
+<li>the lead car's first junction entry (<code>first_junction_entry_t</code>) is ≥ 5.0 s under LPI;</li>
+<li>it is at least 3.0 s later under LPI than under concurrent (the launch takes about 4 s, so under concurrent the entry falls near 5 s rather than before it);</li>
+<li>both runs complete;</li>
+<li>no run ends in a mutual standstill.</li>
+</ul>
+</li>
+<li><strong>Q-c (sanity).</strong> With d = 7.4, <code>S1_B5_01__P3__gipps__lpi</code> completes without a standstill.</li>
+<li><strong>Contacts.</strong> Polygon contacts are counted and reported as in v6. A contact does not fail a gate unless it begins under the pass rule (the v6 G6b criterion).</li>
+<li><strong>If a gate fails.</strong> Change only the offset, record the change here, and rerun the gate.</li>
+</ul>
+<p><strong>Gate outcome (9 November, 22:13; <code>checkpoints/gates/GATES_Q.json</code>).</strong> All passed:</p>
+<ul>
+<li>Q-a 2 of 2: identical to v6;</li>
+<li>Q-b 6 of 6: lead junction entry 5.1 s concurrent against 10.1 s LPI in each pair, with the encounters now differing between the twins;</li>
+<li>Q-c 1 of 1.</li>
+<li>There were no contacts and no standstills. Nothing was changed after the gates.</li>
+</ul>
+<h2>4. Grid and analysis</h2>
+<ul>
+<li><strong>Grid:</strong> the same 960 episodes as <code>BATCH_GRID_R01.json</code> (80 scenarios × 3 lead paradigms × 2 follower laws × 2 signal programs), each with <code>queue_offset_m</code> = 7.4, in <code>runs/grid/Q01</code>. Each runs once, with no outcome-selected retries.</li>
+<li><strong>Registered analysis.</strong> <code>analysis/aggregate_v6.py</code> and <code>analysis/select_replay_v6.py</code> are unchanged and write to <code>checkpoints/Q01</code>. The hypotheses are H5–H8 and Check C, exactly as in <code>DESIGN_H.md</code> section 5, with the same directions, contrasts, bootstrap (4000, fixed seed) and replay rule.</li>
+<li><strong>Exploratory analysis.</strong> <code>posthoc/micro_macro_v6.py</code> is unchanged and writes to <code>checkpoints/Q01/posthoc</code>.</li>
+</ul>
+<h2>5. How the two grids are reported</h2>
+<ul>
+<li><strong>Primary for H6 and H7: Q01.</strong> It is the only grid in which the LPI can act.</li>
+<li><strong>H5 and H8.</strong> Both grids are reported. R01 is the registered original; Q01 shows whether the paradigm and follower effects hold when the queue starts at the line.</li>
+<li><strong>The upstream start.</strong> The R01 "LPI changes nothing" result is reported as a benchmark finding: when an LPI matters depends on where the queue is when the green begins.</li>
+<li><strong>Labelling.</strong> Every Q01 number is labelled as coming from the amendment. The amendment was written after the R01 outcomes were known; it changes only the start of the queue, and the hypotheses are unchanged.</li>
+</ul>
+  </article>
+</main>
+</body>
+</html>
