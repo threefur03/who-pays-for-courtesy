@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Who Pays for Courtesy?</title>
-<meta name="description" content="Supplementary material for an AAAI-27 workshop paper: who waits, and who passes close, when turning cars and people share a signalised crosswalk.">
+<meta name="description" content="Closed-loop benchmark: who waits, and who passes close, when turning cars and people share a signalised crosswalk.">
 <meta name="robots" content="noindex">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 22'%3E%3Crect x='1' y='1' width='30' height='20' rx='2' fill='white' stroke='%23232323' stroke-width='2'/%3E%3Cpath d='M7 1v20M13 1v20M19 1v20M25 1v20' stroke='%23232323' stroke-width='3'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,7 +27,7 @@
       <li><a href="#details">Detailed results</a></li>
     </ol>
   </nav>
-  <div class="rail-foot">Supplementary material for an AAAI-27 workshop paper.
+  <div class="rail-foot">Work in progress.
     <br><button class="theme-btn" type="button" data-theme-toggle>Toggle theme</button></div>
 </aside>
 
@@ -43,7 +43,7 @@
   </div>
 
   <header class="hero">
-    <div class="kicker">Supplementary material · AAAI-27 workshop paper</div>
+    <div class="kicker">Closed-loop benchmark · work in progress</div>
     <h1>Who pays for <span class="z">courtesy</span> at the crosswalk?</h1>
     <p class="subtitle">A self-driving car that gives way to people at a crosswalk saves them time, and the cars queued behind it pay
       for that time. We tested twelve driving planners, from simple rules to open-source driving systems, and kept the account for
@@ -53,7 +53,7 @@
       <a class="btn" href="#found">Findings</a>
       <a class="btn" href="#replays">Replays</a>
       <a class="btn" href="#details">For reviewers</a>
-      <span class="btn" aria-disabled="true">Code: released after review</span>
+      <span class="btn" aria-disabled="true">Code: to be released</span>
     </div>
   </header>
 
@@ -128,19 +128,6 @@
       </ul>
     </div>
 
-    <div class="callout" id="workshop-questions">
-      <h4>Which of the workshop's questions this study answers</h4>
-      <ul class="plain">
-        <li><b>How should agentic mobility be evaluated beyond driving metrics?</b> The main question here: score everyone at
-          the crossing in closed loop, not only the car under test, and see whether the ranking of agents changes.</li>
-        <li><b>How should agents adapt to the drivers and road users around them?</b> We compare how each agent gives way with
-          how human drivers at a real junction do it, and which crossers end up with the close passes.</li>
-        <li><b>Which agent designs remain effective under the safety constraints of real vehicles?</b> In part: we count how each
-          design fails (near misses, emergency braking, a car stuck on the crosswalk at the end of its green) when the signal
-          timing changes.</li>
-        <li><b>Coordination at fleet and network scale</b> is outside this one-junction study.</li>
-      </ul>
-    </div>
 
     <h3>How we built the test</h3>
     <p>The test is a simulated junction in CARLA, an open-source driving simulator. Three cars wait at the stop line to turn left
@@ -750,7 +737,7 @@
       </div>
     </details>
 
-    <footer class="site-foot">Supplementary material for an AAAI-27 workshop paper.</footer>
+    <footer class="site-foot">Work in progress.</footer>
   </section>
 </main>
 </div>
